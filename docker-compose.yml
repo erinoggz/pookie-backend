@@ -1,0 +1,43 @@
+version: '3'
+services:
+  app:
+    container_name: pookie_web_app
+    image: pookie_web_app
+    build: .
+    networks:
+      - main_network
+    ports:
+      - "8083:8083"
+    volumes:
+      # - ${PWD}/app/node_modules
+      - /app/node_modules
+      - .:/app
+    stdin_open: true
+
+  redis:
+    container_name: pookie_redis
+    image: redis
+    logging:
+      driver: none
+    ports:
+      - "6379"
+    networks:
+      - main_network
+
+  mongo:
+    container_name: pookie_mongo
+    image: mongo
+    volumes:
+      - /data/db/mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - main_network
+
+volumes:
+  node_modules:
+
+
+networks:
+  main_network:
+    driver: bridge
