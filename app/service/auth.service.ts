@@ -26,6 +26,9 @@ export class AuthService {
       profilePicture,
       state,
       country,
+      phoneNumber,
+      gender,
+      aboutMe,
     } = req.body;
 
     const isUserExist = await User.findOne({ email });
@@ -44,6 +47,9 @@ export class AuthService {
       userType,
       profilePicture,
       state,
+      phoneNumber,
+      gender,
+      aboutMe,
       country,
     });
 
@@ -59,7 +65,7 @@ export class AuthService {
       template_name: 'verify',
       recipient_email: email,
       short_response_message:
-        'verify your account :). The Otp will expire in 1 hour',
+        'verify your account :). The Otp will expire in 5 minutes',
       email_data: `${input.otp}`,
     };
 
