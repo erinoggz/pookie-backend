@@ -32,7 +32,7 @@ export default class Helpers {
       email,
       otp: Math.floor(100000 + Math.random() * 900000),
       userType,
-      expiresAt: moment(Date.now() + 3600000).format(),
+      expiresAt: moment(Date.now() + 300000).format(),
     };
   };
 
