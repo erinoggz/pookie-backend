@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { injectable } from 'tsyringe';
+import { UserType } from '../common/Enum/userType';
 import { ErrnoException, IRequest, ISuccess } from '../common/Interface/IResponse';
 import { IEmail } from '../common/Types/email';
 import configuration from '../config/config';
@@ -315,6 +316,54 @@ export class AuthService {
       );
     user.password = newPassword;
     await user.save();
+    return Helpers.success(null);
+  };
+
+  public me = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
+    const user = await User.findById(new Types.ObjectId(req.user.id));
+    user.password = undefined;
+    return Helpers.success(user);
+  };
+
+  public profileSetup = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const userData = {};
+    let validateData = [];
+
+    if (req.user.userType === UserType.PARENT) {
+      validateData = [
+        'meansOfVerification',
+        'verificationData',
+        'noOfChildren',
+        'specialNeeds',
+        'pets',
+        'language',
+        'lookingFor',
+      ];
+    }
+
+    if (req.user.userType === UserType.SITTER) {
+      validateData = [
+        'firstAid',
+        'childcareCertification',
+        'cpr',
+        'rate',
+        'language',
+        'availability',
+        'specialNeeds',
+        'ownTransport',
+        'job',
+      ];
+    }
+
+    // Makes only data in validateData that can be updated
+    Object.entries(req.body).forEach(([key, value]) => {
+      if (validateData.includes(key)) userData[key] = value;
+    });
+    userData['profileSetupComplete'] = true;
+    const user = await User.findByIdAndUpdate(req.user.id, { $set: userData });
+    user.password = undefined;
     return Helpers.success(null);
   };
 }

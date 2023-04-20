@@ -34,7 +34,7 @@ const UserSchema = new Schema<IUserModel>(
       type: String,
       enum: Object.values(['PARENT', 'SITTER', 'GRIND']).concat([null]),
     },
-    Job: {
+    job: {
       type: String,
       enum: Object.values(['SITTER', 'AU_PAIR', 'NANNY', 'GRIND']).concat([null]),
     },
@@ -52,8 +52,8 @@ const UserSchema = new Schema<IUserModel>(
     },
     availability: {
       type: String,
-      enum: ['AVAILABLE', 'BUSY', 'NOT_AVAILABLE'],
-      default: 'NOT_AVAILABLE',
+      enum: ['AVAILABLE', 'BUSY', 'OTHERS'],
+      default: 'OTHERS',
     },
     profilePicture: String,
     firstName: String,
@@ -65,7 +65,8 @@ const UserSchema = new Schema<IUserModel>(
     noOfChildren: String,
     specialNeeds: String,
     userVerifiedAt: Date,
-    pets: {
+    pets: [],
+    profileSetupComplete: {
       type: Boolean,
       default: false,
     },

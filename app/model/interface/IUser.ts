@@ -16,15 +16,16 @@ export interface IUser extends Document {
   country: string;
   noOfChildren: string;
   specialNeeds: string;
-  pets: boolean;
+  profileSetupComplete: boolean;
+  pets: [];
   rate: string;
   language: string;
   firstAid: string;
   childcareCertification: string;
   cpr: string;
   ownTransport: string;
-  availability: 'AVAILABLE' | 'BUSY' | 'NOT_AVAILABLE';
-  Job: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
+  availability: 'AVAILABLE' | 'BUSY' | 'OTHERS';
+  job: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
   lookingFor: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
   meansOfVerification:
     | 'INTERNATIONAL_PASSPORT'
