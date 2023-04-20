@@ -334,6 +334,7 @@ export class AuthService {
     if (req.user.userType === UserType.PARENT) {
       validateData = [
         'meansOfVerification',
+        'verificationData',
         'noOfChildren',
         'specialNeeds',
         'pets',
@@ -363,6 +364,6 @@ export class AuthService {
     userData['profileSetupComplete'] = true;
     const user = await User.findByIdAndUpdate(req.user.id, { $set: userData });
     user.password = undefined;
-    return Helpers.success(user);
+    return Helpers.success(null);
   };
 }
