@@ -23,7 +23,7 @@ export interface IUser extends Document {
   childcareCertification: string;
   cpr: string;
   ownTransport: string;
-  availability: 'AVAILABLE' | 'BUSY' | 'NOT_AVAILABLE';
+  availability: 'AVAILABLE' | 'BUSY' | 'OTHERS';
   Job: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
   lookingFor: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
   meansOfVerification:
