@@ -19,6 +19,7 @@ AuthRouter.post('/register', authValidator.register, authController.register)
     authMiddleware,
     authValidator.change,
     authController.change
-  );
+  )
+  .get('/me', authMiddleware, authController.me);
 
 export default AuthRouter;

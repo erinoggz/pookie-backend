@@ -317,4 +317,10 @@ export class AuthService {
     await user.save();
     return Helpers.success(null);
   };
+
+  public me = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
+    const user = await User.findById(new Types.ObjectId(req.user.id));
+    user.password = undefined;
+    return Helpers.success(user);
+  };
 }

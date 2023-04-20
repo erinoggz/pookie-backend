@@ -16,6 +16,7 @@ export interface IUser extends Document {
   country: string;
   noOfChildren: string;
   specialNeeds: string;
+  profileSetupComplete: boolean;
   pets: boolean;
   rate: string;
   language: string;

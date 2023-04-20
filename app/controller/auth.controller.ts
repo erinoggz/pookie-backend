@@ -138,6 +138,27 @@ class AuthController {
       );
     }
   };
+
+  /**
+   * @route GET api/v1/auth/me.
+   * @desc Get current User
+   * @access Public.
+   */
+  me = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.authService.me(req);
+      return res.ok(
+        result?.data,
+        result?.message || 'current user fetched successfully!'
+      );
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to get current user',
+        error?.code
+      );
+    }
+  };
 }
 
 export default AuthController;

@@ -69,6 +69,10 @@ const UserSchema = new Schema<IUserModel>(
       type: Boolean,
       default: false,
     },
+    profileSetupComplete: {
+      type: Boolean,
+      default: false,
+    },
     rate: String,
     language: String,
     firstAid: String,
