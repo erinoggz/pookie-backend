@@ -17,7 +17,7 @@ export interface IUser extends Document {
   noOfChildren: string;
   specialNeeds: string;
   profileSetupComplete: boolean;
-  pets: boolean;
+  pets: [];
   rate: string;
   language: string;
   firstAid: string;
@@ -25,7 +25,7 @@ export interface IUser extends Document {
   cpr: string;
   ownTransport: string;
   availability: 'AVAILABLE' | 'BUSY' | 'OTHERS';
-  Job: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
+  job: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
   lookingFor: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
   meansOfVerification:
     | 'INTERNATIONAL_PASSPORT'

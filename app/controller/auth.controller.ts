@@ -159,6 +159,24 @@ class AuthController {
       );
     }
   };
+
+  /**
+   * @route PUT api/v1/auth/profile-setup.
+   * @desc Put profile setup
+   * @access Public.
+   */
+  profileSetup = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.authService.profileSetup(req);
+      return res.ok(result?.data, result?.message || 'Profile set up complete');
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to set up profile',
+        error?.code
+      );
+    }
+  };
 }
 
 export default AuthController;
