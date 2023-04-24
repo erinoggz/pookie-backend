@@ -20,10 +20,10 @@ export interface IUser extends Document {
   pets: [];
   rate: string;
   language: string;
-  firstAid: string;
+  firstAid: boolean;
   childcareCertification: string;
   cpr: string;
-  ownTransport: string;
+  ownTransport: boolean;
   availability: 'AVAILABLE' | 'BUSY' | 'NOT_AVAILABLE';
   job: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
   lookingFor: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
@@ -38,4 +38,5 @@ export interface IUser extends Document {
   googleId: string;
   facebookId: string;
   userVerifiedAt: Date;
+  childcareCertified: boolean;
 }

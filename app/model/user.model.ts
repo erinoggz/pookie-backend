@@ -72,10 +72,20 @@ const UserSchema = new Schema<IUserModel>(
     },
     rate: String,
     language: String,
-    firstAid: String,
+    firstAid: {
+      type: Boolean,
+      default: false,
+    },
+    childcareCertified: {
+      type: Boolean,
+      default: false,
+    },
     childcareCertification: String,
     cpr: String,
-    ownTransport: String,
+    ownTransport: {
+      type: Boolean,
+      default: false,
+    },
     googleId: String,
     facebookId: String,
     lastLogin: Date,
@@ -131,4 +141,18 @@ UserSchema.methods.generateJWT = function (expiresIn: string): string {
 const User = model<IUserModel>('Users', UserSchema);
 
 export default User;
+
+UserSchema.index({
+  gender: 1,
+  country: 1,
+  state: 1,
+  childcareCertified: 1,
+  specialNeeds: 1,
+  rate: 1,
+  language: 1,
+  ownTransport: 1,
+  firstAid: 1,
+  job: 1,
+});
+
 User.syncIndexes();
