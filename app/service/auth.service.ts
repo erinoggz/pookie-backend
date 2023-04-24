@@ -104,7 +104,7 @@ export class AuthService {
     // Check user account is verified
     if (!user.userVerifiedAt)
       return Helpers.CustomException(
-        StatusCodes.UNAUTHORIZED,
+        StatusCodes.FORBIDDEN,
         'Account not verified. Please verify account'
       );
 
