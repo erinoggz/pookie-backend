@@ -11,6 +11,7 @@ import passport from 'passport';
 import { container } from 'tsyringe';
 import { LoggerService } from './app/service/logger.service';
 import StatusCodes from './app/lib/response/status-codes';
+import seeder from './app/seeds';
 const logger: LoggerService = container.resolve(LoggerService);
 
 class Server {
@@ -49,9 +50,15 @@ class Server {
     // Mount routes
     Routes(this.app);
   }
+
+  public databaseSeeds = async function () {
+    await seeder.seedDb();
+  };
+
   public async start() {
     const PORT = config.web.port;
     this.configuration();
+    this.databaseSeeds();
     this.app.listen(PORT, () => {
       logger.log(`Server is listening on port ${PORT}.`);
     });
