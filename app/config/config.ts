@@ -24,6 +24,10 @@ const configuration = {
     sendgrid_api_key: process.env.SENDGRID_API_KEY,
     sendgrid_jwt_duration: process.env.JWT_DURATION || '10m',
   },
+  stripe: {
+    stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+    stripe_publishable_key: process.env.STRIPE_PUBLISHABLE_KEY,
+  },
 };
 
 export default configuration;
