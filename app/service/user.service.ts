@@ -33,9 +33,18 @@ export class UserService {
     if (min || max) {
       query['rate'] = { $gte: min, $lte: max };
     }
-    query['userType'] = { $ne: UserType.PARENT };
 
-    const response = await this.pagination.paginate(query, this.queryKeys);
+    for (const key in query) {
+      if (Object.prototype.hasOwnProperty.call(query, key)) {
+        const filter = query[key];
+        if (filter === 'all') {
+          delete query[key];
+        }
+      }
+    }
+    query['userType'] = { $eq: UserType.SITTER };
+    const select = { password: 0 };
+    const response = await this.pagination.paginate(query, this.queryKeys, select);
     return Helpers.success(response);
   };
 }

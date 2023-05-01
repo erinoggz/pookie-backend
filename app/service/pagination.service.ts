@@ -36,7 +36,8 @@ export default class PaginationService<T> {
    */
   async paginate<T>(
     options: PaginationOptions,
-    keys: string[]
+    keys: string[],
+    select?: object
   ): Promise<Pagination<T>> {
     const {
       page,
@@ -70,6 +71,7 @@ export default class PaginationService<T> {
         .sort(sort)
         .populate(populate)
         .lean()
+        .select({ ...select })
         .exec(),
     ]);
 
