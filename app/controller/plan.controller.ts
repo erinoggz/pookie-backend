@@ -7,13 +7,13 @@ class PlanController {
   constructor(private planService: PlanService) {}
 
   /**
-   * @route GET api/v1/plans
+   * @route GET api/v1/plan
    * @desc get plans endpoint
    * @access Public.
    */
   getPlans = async (req: IRequest, res: IResponse) => {
     try {
-      const result = await this.planService.getPlans();
+      const result = await this.planService.getPlans(req);
       return res.ok(result?.data, result?.message || 'Plans fetched successfully!');
     } catch (error) {
       return res.serverError(
