@@ -1,4 +1,5 @@
 import { injectable } from 'tsyringe';
+import { UserType } from '../common/Enum/userType';
 import { ErrnoException, IRequest, ISuccess } from '../common/Interface/IResponse';
 import Helpers from '../lib/helpers';
 import User, { IUserModel } from '../model/user.model';
@@ -19,6 +20,7 @@ export class UserService {
     'ownTransport',
     'firstAid',
     'job',
+    'userType',
   ];
 
   constructor() {
@@ -31,6 +33,8 @@ export class UserService {
     if (min || max) {
       query['rate'] = { $gte: min, $lte: max };
     }
+    query['userType'] = { $ne: UserType.PARENT };
+
     const response = await this.pagination.paginate(query, this.queryKeys);
     return Helpers.success(response);
   };

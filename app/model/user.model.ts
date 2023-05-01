@@ -143,6 +143,7 @@ const User = model<IUserModel>('Users', UserSchema);
 export default User;
 
 UserSchema.index({
+  userType: 1,
   gender: 1,
   country: 1,
   state: 1,
