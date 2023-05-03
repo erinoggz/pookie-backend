@@ -30,6 +30,14 @@ export class AuthService {
       phoneNumber,
       gender,
       aboutMe,
+      dateOfBirth,
+      training,
+      smoker,
+      ownCar,
+      experience,
+      childcareCertified,
+      childcareCertification,
+      gardaCheck,
     } = req.body;
 
     const isUserExist = await User.findOne({ email });
@@ -52,6 +60,14 @@ export class AuthService {
       gender,
       aboutMe,
       country,
+      dateOfBirth,
+      training,
+      smoker,
+      ownCar,
+      experience,
+      gardaCheck,
+      childcareCertified,
+      childcareCertification,
     });
 
     const input = Helpers.otpGenerator(email, userType);
@@ -354,6 +370,10 @@ export class AuthService {
         'specialNeeds',
         'ownTransport',
         'job',
+        'dateOfBirth',
+        'smoker',
+        'ownCar',
+        'experience',
       ];
     }
 

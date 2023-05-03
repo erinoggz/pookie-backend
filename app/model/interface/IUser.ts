@@ -17,6 +17,7 @@ export interface IUser extends Document {
   dateOfBirth: string;
   training: boolean;
   smoker: boolean;
+  gardaCheck: boolean;
   ownCar: boolean;
   country: string;
   noOfChildren: string;

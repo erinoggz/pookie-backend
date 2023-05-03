@@ -72,6 +72,10 @@ const UserSchema = new Schema<IUserModel>(
       type: Boolean,
       default: false,
     },
+    gardaCheck: {
+      type: Boolean,
+      default: false,
+    },
     experience: String,
     ownCar: {
       type: Boolean,
