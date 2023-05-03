@@ -13,11 +13,17 @@ export interface IUser extends Document {
   address: string;
   aboutMe: string;
   state: string;
+  age: string;
+  dateOfBirth: string;
+  training: boolean;
+  smoker: boolean;
+  ownCar: boolean;
   country: string;
   noOfChildren: string;
   specialNeeds: string;
+  experience: string;
   profileSetupComplete: boolean;
-  pets: [];
+  pets: string;
   rate: string;
   language: string;
   firstAid: boolean;

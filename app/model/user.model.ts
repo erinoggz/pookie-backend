@@ -65,8 +65,15 @@ const UserSchema = new Schema<IUserModel>(
     noOfChildren: String,
     specialNeeds: String,
     userVerifiedAt: Date,
-    pets: [],
-    profileSetupComplete: {
+    pets: String,
+    dateOfBirth: String,
+    training: String,
+    smoker: {
+      type: Boolean,
+      default: false,
+    },
+    experience: String,
+    ownCar: {
       type: Boolean,
       default: false,
     },
