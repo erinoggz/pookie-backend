@@ -32,12 +32,10 @@ export class AuthService {
       aboutMe,
       dateOfBirth,
       training,
+      pets,
       smoker,
       ownCar,
       experience,
-      childcareCertified,
-      childcareCertification,
-      gardaCheck,
     } = req.body;
 
     const isUserExist = await User.findOne({ email });
@@ -63,11 +61,9 @@ export class AuthService {
       dateOfBirth,
       training,
       smoker,
+      pets,
       ownCar,
       experience,
-      gardaCheck,
-      childcareCertified,
-      childcareCertification,
     });
 
     const input = Helpers.otpGenerator(email, userType);
@@ -362,6 +358,8 @@ export class AuthService {
     if (req.user.userType === UserType.SITTER) {
       validateData = [
         'firstAid',
+        'gardaCheck',
+        'childcareCertified',
         'childcareCertification',
         'cpr',
         'rate',
