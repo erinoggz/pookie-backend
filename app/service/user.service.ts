@@ -27,8 +27,8 @@ export class UserService {
     this.pagination = new PaginationService(User);
   }
   public getSitters = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
-    const { min, max } = req.query;
-    const query = req.query;
+    const { min, max, srch } = req.query;
+    const query: any = req.query;
     // Set rate
     if (min || max) {
       query['rate'] = { $gte: min, $lte: max };
@@ -43,6 +43,17 @@ export class UserService {
       }
     }
     query['userType'] = { $eq: UserType.SITTER };
+    if (srch) {
+      const searchQuery = {
+        $or: [
+          { firstName: { $regex: query.srch, $options: 'i' } },
+          { lastName: { $regex: query.srch, $options: 'i' } },
+        ],
+      };
+      delete query.srch;
+      if (!query.$and) query.$and = [];
+      query.$and.push(searchQuery);
+    }
     const select = { password: 0 };
     const response = await this.pagination.paginate(query, this.queryKeys, select);
     return Helpers.success(response);

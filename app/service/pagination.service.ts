@@ -42,23 +42,15 @@ export default class PaginationService<T> {
     const {
       page,
       limit,
-      srch,
       projections,
       sort,
       // query,
       populate,
     } = options;
     const query: Record<string, unknown> = {
-      ...options.query,
+      ...options,
       ...PaginationService.extractQuery(options, keys),
     };
-
-    if (srch) {
-      query['$text'] = { $search: srch };
-    }
-
-    // console.log(query);
-
     const p = Number(page) || Constants.FETCH_DATA_DEFAULT_PAGE_NUMBER;
     const pp = Number(limit) || Constants.FETCH_DATA_MIN_LIMIT;
 
