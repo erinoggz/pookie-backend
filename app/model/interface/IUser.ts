@@ -9,6 +9,7 @@ export interface IUser extends Document {
   profilePicture: string;
   userType: 'PARENT' | 'SITTER' | 'GRIND';
   firstName: string;
+  referredBy: string;
   lastName: string;
   address: string;
   aboutMe: string;

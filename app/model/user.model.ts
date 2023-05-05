@@ -32,6 +32,9 @@ const UserSchema = new Schema<IUserModel>(
     phoneNumber: {
       type: String,
     },
+    referredBy: {
+      type: String,
+    },
     urlKey: { type: String, slug: ['firstName', 'lastName'], unique: true },
     gender: {
       type: String,
