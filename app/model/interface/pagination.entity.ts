@@ -16,7 +16,7 @@ export interface Pagination<T> {
 export interface PaginationOptions extends Object {
   page?: number;
   limit?: number;
-  q?: string;
+  srch?: string;
   query?: object | Record<string, object>;
   modelName?: string;
   projections?: object; //Record<string, unknown>,

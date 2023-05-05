@@ -42,7 +42,7 @@ export default class PaginationService<T> {
     const {
       page,
       limit,
-      q,
+      srch,
       projections,
       sort,
       // query,
@@ -53,8 +53,8 @@ export default class PaginationService<T> {
       ...PaginationService.extractQuery(options, keys),
     };
 
-    if (q) {
-      query['$text'] = { $search: q };
+    if (srch) {
+      query['$text'] = { $search: srch };
     }
 
     // console.log(query);
