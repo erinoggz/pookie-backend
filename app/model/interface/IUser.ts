@@ -13,6 +13,7 @@ export interface IUser extends Document {
   address: string;
   aboutMe: string;
   state: string;
+  urlKey: string;
   age: string;
   dateOfBirth: string;
   training: boolean;

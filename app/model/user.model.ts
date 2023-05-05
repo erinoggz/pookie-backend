@@ -1,14 +1,21 @@
 import * as argon2 from 'argon2';
 import * as jwt from 'jsonwebtoken';
-import { model, Schema } from 'mongoose';
+import { model, Schema, plugin } from 'mongoose';
 import configuration from '../config/config';
 import { IUser } from './interface/IUser';
+import slugGenerator from 'mongoose-slug-generator';
 
 // Create the model schema & register your custom methods here
 export interface IUserModel extends IUser {
   comparePassword(password: string): Promise<boolean>;
   generateJWT(expiresIn: string): string;
 }
+
+plugin(slugGenerator, {
+  separator: '-',
+  lang: 'en',
+  truncate: 120,
+});
 
 // Create the user schema
 const UserSchema = new Schema<IUserModel>(
@@ -25,6 +32,7 @@ const UserSchema = new Schema<IUserModel>(
     phoneNumber: {
       type: String,
     },
+    urlKey: { type: String, slug: ['firstName', 'lastName'], unique: true },
     gender: {
       type: String,
       enum: ['MALE', 'FEMALE', 'NOT_SPECIFIED'],
@@ -152,6 +160,11 @@ UserSchema.methods.generateJWT = function (expiresIn: string): string {
 const User = model<IUserModel>('Users', UserSchema);
 
 export default User;
+UserSchema.index({
+  firstName: 'text',
+  lastName: 'text',
+  urlKey: 'text',
+});
 
 UserSchema.index({
   userType: 1,
