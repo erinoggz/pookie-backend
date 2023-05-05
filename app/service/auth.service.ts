@@ -34,6 +34,7 @@ export class AuthService {
       training,
       pets,
       smoker,
+      rate,
       ownCar,
       experience,
     } = req.body;
@@ -62,6 +63,7 @@ export class AuthService {
       training,
       smoker,
       pets,
+      rate,
       ownCar,
       experience,
     });
