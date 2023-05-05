@@ -163,11 +163,6 @@ UserSchema.methods.generateJWT = function (expiresIn: string): string {
 const User = model<IUserModel>('Users', UserSchema);
 
 export default User;
-UserSchema.index({
-  firstName: 'text',
-  lastName: 'text',
-  urlKey: 'text',
-});
 
 UserSchema.index({
   userType: 1,
