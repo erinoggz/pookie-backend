@@ -48,4 +48,5 @@ export interface IUser extends Document {
   facebookId: string;
   userVerifiedAt: Date;
   childcareCertified: boolean;
+  ratings: { reviewCount: number; averageRatings: number };
 }

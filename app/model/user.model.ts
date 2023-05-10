@@ -115,6 +115,16 @@ const UserSchema = new Schema<IUserModel>(
       type: Boolean,
       default: true,
     },
+    ratings: {
+      reviewCount: {
+        type: Number,
+        default: 0,
+      },
+      averageRatings: {
+        type: Number,
+        default: 0,
+      },
+    },
   },
   {
     timestamps: true,

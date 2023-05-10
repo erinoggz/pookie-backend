@@ -354,6 +354,8 @@ export class AuthService {
         'pets',
         'language',
         'lookingFor',
+        'firstName',
+        'lastName',
       ];
     }
 
@@ -374,6 +376,8 @@ export class AuthService {
         'smoker',
         'ownCar',
         'experience',
+        'firstName',
+        'lastName',
       ];
     }
 
