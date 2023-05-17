@@ -1,14 +1,13 @@
 import * as argon2 from 'argon2';
 import * as jwt from 'jsonwebtoken';
 import { model, Schema, plugin } from 'mongoose';
-import configuration from '../config/config';
 import { IUser } from './interface/IUser';
 import slugGenerator from 'mongoose-slug-generator';
 
 // Create the model schema & register your custom methods here
 export interface IUserModel extends IUser {
   comparePassword(password: string): Promise<boolean>;
-  generateJWT(expiresIn: string): string;
+  generateJWT(expiresIn: string, secret: string): string;
 }
 
 plugin(slugGenerator, {
@@ -157,14 +156,17 @@ UserSchema.methods.comparePassword = function (password: string): Promise<boolea
  * Generates JWT token for user.
  * @return {string} The generated user JWT.
  */
-UserSchema.methods.generateJWT = function (expiresIn: string): string {
+UserSchema.methods.generateJWT = function (
+  expiresIn: string,
+  secret: string
+): string {
   const payload = {
     id: this._id,
     email: this.email,
     userType: this.userType,
   };
 
-  return jwt.sign(payload, configuration.web.jwt_secret, {
+  return jwt.sign(payload, secret, {
     expiresIn,
   });
 };

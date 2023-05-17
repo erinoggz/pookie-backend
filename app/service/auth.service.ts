@@ -1,7 +1,12 @@
 import { Types } from 'mongoose';
 import { injectable } from 'tsyringe';
 import { UserType } from '../common/Enum/userType';
-import { ErrnoException, IRequest, ISuccess } from '../common/Interface/IResponse';
+import {
+  ErrnoException,
+  IRequest,
+  IResponse,
+  ISuccess,
+} from '../common/Interface/IResponse';
 import { IEmail } from '../common/Types/email';
 import configuration from '../config/config';
 import Helpers from '../lib/helpers';
@@ -95,7 +100,10 @@ export class AuthService {
     );
   };
 
-  public loginUser = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
+  public loginUser = async (
+    req: IRequest,
+    res: IResponse
+  ): Promise<ISuccess | ErrnoException> => {
     const { email, password } = req.body;
 
     const user = await User.findOne({
@@ -134,8 +142,25 @@ export class AuthService {
     await user.save();
     // Make response not to send user password
     user.password = undefined;
+
+    const refreshToken = user.generateJWT(
+      configuration.web.jwt_refresh_duration,
+      configuration.web.jwt_refresh_secret
+    );
+
+    // Assigning refresh token in http-only cookie
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
     return Helpers.success({
-      token: user.generateJWT(configuration.web.jwt_duration),
+      token: user.generateJWT(
+        configuration.web.jwt_duration,
+        configuration.web.jwt_secret
+      ),
       user: user,
     });
   };
@@ -389,5 +414,32 @@ export class AuthService {
     const user = await User.findByIdAndUpdate(req.user.id, { $set: userData });
     user.password = undefined;
     return Helpers.success(null);
+  };
+
+  public refreshToken = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const refresh_token = req?.cookies?.refresh_token;
+    if (!refresh_token)
+      return Helpers.CustomException(
+        StatusCodes.FORBIDDEN,
+        'Refresh token not provided in cookies'
+      );
+
+    const verifyToken: any = await Helpers.verifyJWT(
+      refresh_token,
+      configuration.web.jwt_refresh_secret
+    );
+    if (verifyToken) {
+      const user = await User.findById(new Types.ObjectId(verifyToken.id));
+      user.password = undefined;
+      return Helpers.success({
+        token: user.generateJWT(
+          configuration.web.jwt_duration,
+          configuration.web.jwt_secret
+        ),
+        user: user,
+      });
+    }
   };
 }

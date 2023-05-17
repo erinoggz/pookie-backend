@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import response from './app/lib/response';
 import jwtMiddleware from './app/middleware/jwt.middleware';
 import passport from 'passport';
+import cookieParser from 'cookie-parser';
 
 import { container } from 'tsyringe';
 import { LoggerService } from './app/service/logger.service';
@@ -36,6 +37,7 @@ class Server {
   public configuration() {
     this.mongooseConnection();
     this.app.use(response);
+    this.app.use(cookieParser());
     this.app.use(cors());
     this.app.use(express.json());
 
