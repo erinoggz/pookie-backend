@@ -9,7 +9,10 @@ const configuration = {
   web: {
     port: process.env.PORT || '9099',
     jwt_secret: process.env.JWT_SECRET || 'pookiejfnkncr@22@50381.C03',
+    jwt_refresh_secret:
+      process.env.JWT_REFRESH_SECRET || 'pookiejreffnkncr@22@50381.C03',
     jwt_duration: process.env.JWT_DURATION || '1h',
+    jwt_refresh_duration: process.env.JWT_REFRESH_DURATION || '1y',
     header_name: process.env.HEADER_NAME || 'x-auth-token',
   },
   redis: {

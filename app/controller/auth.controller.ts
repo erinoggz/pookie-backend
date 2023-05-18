@@ -31,7 +31,7 @@ class AuthController {
    */
   login = async (req: IRequest, res: IResponse) => {
     try {
-      const result = await this.authService.loginUser(req);
+      const result = await this.authService.loginUser(req, res);
       return res.ok(result?.data, result?.message || 'Login successfully');
     } catch (error) {
       return res.serverError(
@@ -173,6 +173,45 @@ class AuthController {
       return res.serverError(
         error,
         error?.message || 'An error occured while trying to set up profile',
+        error?.code
+      );
+    }
+  };
+
+  /**
+   * @route POST api/v1/auth/refresh-token.
+   * @desc Generates new access token.
+   * @access Public.
+   */
+  refreshToken = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.authService.refreshToken(req);
+      return res.ok(
+        result?.data,
+        result?.message || 'Access token generated successfully'
+      );
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to refresh token',
+        error?.code
+      );
+    }
+  };
+
+  /**
+   * @route POST api/v1/auth/logout.
+   * @desc Logout user.
+   * @access Public.
+   */
+  logout = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.authService.logout(res);
+      return res.ok(result?.data, result?.message || 'Logged out successfully');
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to logout',
         error?.code
       );
     }

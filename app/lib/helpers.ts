@@ -2,6 +2,7 @@ import { ErrnoException, ISuccess } from '../common/Interface/IResponse';
 import StatusCodes from './response/status-codes';
 import moment from 'moment';
 import ResponseMessages from './response/response-messages';
+import * as jwt from 'jsonwebtoken';
 
 /**
  * Class with methods to help your life... LOL
@@ -62,4 +63,14 @@ export default class Helpers {
     error.code = code || StatusCodes.UNPROCESSABLE_ENTITY;
     throw error;
   }
+
+  /**
+   * Verify JWT token.
+   */
+  static verifyJWT = function (
+    token: string,
+    secret: string
+  ): string | jwt.JwtPayload | object {
+    return jwt.verify(token, secret);
+  };
 }
