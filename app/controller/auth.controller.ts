@@ -198,6 +198,24 @@ class AuthController {
       );
     }
   };
+
+  /**
+   * @route POST api/v1/auth/logout.
+   * @desc Logout user.
+   * @access Public.
+   */
+  logout = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.authService.logout(res);
+      return res.ok(result?.data, result?.message || 'Logged out successfully');
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to logout',
+        error?.code
+      );
+    }
+  };
 }
 
 export default AuthController;

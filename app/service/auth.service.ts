@@ -442,4 +442,9 @@ export class AuthService {
       });
     }
   };
+
+  logout = (res: IResponse) => {
+    res.cookie('refresh_token', '', { maxAge: 1 });
+    return Helpers.success(null);
+  };
 }

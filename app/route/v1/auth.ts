@@ -13,6 +13,7 @@ AuthRouter.post('/register', authValidator.register, authController.register)
   .post('/verify', authValidator.verify, authController.verify)
   .post('/resend-otp', authValidator.resendOTP, authController.resendOTP)
   .post('/refresh-token', authController.refreshToken)
+  .post('/logout', authController.logout)
   .put('/forgot-password', authValidator.forgot, authController.forgot)
   .put('/reset-password', authValidator.reset, authController.reset)
   .put(
