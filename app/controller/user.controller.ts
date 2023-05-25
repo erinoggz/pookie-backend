@@ -26,6 +26,27 @@ class UserController {
       );
     }
   };
+
+  /**
+   * @route PUT api/v1/user/garda-check.
+   * @desc PUT user
+   * @access Public.
+   */
+  addGarderCheck = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.userService.addGarderCheck(req);
+      return res.ok(
+        result?.data,
+        result?.message || 'Garder check added successfully!'
+      );
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to add garder check',
+        error?.code
+      );
+    }
+  };
 }
 
 export default UserController;

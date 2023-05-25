@@ -83,8 +83,9 @@ const UserSchema = new Schema<IUserModel>(
       default: false,
     },
     gardaCheck: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ['PENDING', 'VERIFIED', 'UN_VERIFIED'],
+      default: 'UN_VERIFIED',
     },
     experience: String,
     ownCar: {
@@ -113,6 +114,10 @@ const UserSchema = new Schema<IUserModel>(
     status: {
       type: Boolean,
       default: true,
+    },
+
+    gardaCheckdoc: {
+      type: String,
     },
     ratings: {
       reviewCount: {

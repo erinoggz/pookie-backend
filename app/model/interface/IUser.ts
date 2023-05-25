@@ -19,7 +19,8 @@ export interface IUser extends Document {
   dateOfBirth: string;
   training: boolean;
   smoker: boolean;
-  gardaCheck: boolean;
+  gardaCheck: 'PENDING' | 'VERIFIED' | 'UN_VERIFIED';
+  gardaCheckdoc: string;
   ownCar: boolean;
   country: string;
   noOfChildren: string;
