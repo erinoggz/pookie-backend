@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { injectable } from 'tsyringe';
 import { UserType } from '../common/Enum/userType';
 import { ErrnoException, IRequest, ISuccess } from '../common/Interface/IResponse';
@@ -57,5 +58,17 @@ export class UserService {
     const select = { password: 0 };
     const response = await this.pagination.paginate(query, this.queryKeys, select);
     return Helpers.success(response);
+  };
+
+  public addGarderCheck = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { gardaCheckdoc } = req.body;
+
+    const user = await User.findById(new Types.ObjectId(req.user.id));
+    user.gardaCheckdoc = gardaCheckdoc;
+    user.gardaCheck = 'PENDING';
+    await user.save();
+    return Helpers.success(null);
   };
 }
