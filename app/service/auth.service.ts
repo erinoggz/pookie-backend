@@ -381,6 +381,14 @@ export class AuthService {
         'lookingFor',
         'firstName',
         'lastName',
+        'profilePicture',
+        'phoneNumber',
+        'firstName',
+        'lastName',
+        'gender',
+        'aboutMe',
+        'state',
+        'country',
       ];
     }
 
