@@ -34,6 +34,10 @@ const UserSchema = new Schema<IUserModel>(
     referredBy: {
       type: String,
     },
+    current_subscription: {
+      type: Schema.Types.ObjectId,
+      ref: 'Subscription',
+    },
     urlKey: { type: String, slug: ['firstName', 'lastName'], unique: true },
     gender: {
       type: String,

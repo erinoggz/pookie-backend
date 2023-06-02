@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   phoneNumber: string;
+  current_subscription: Types.ObjectId;
   gender: 'MALE' | 'FEMALE' | 'NOT_SPECIFIED';
   profilePicture: string;
   userType: 'PARENT' | 'SITTER' | 'GRIND';
