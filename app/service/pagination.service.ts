@@ -53,7 +53,6 @@ export default class PaginationService<T> {
     };
     const p = Number(page) || Constants.FETCH_DATA_DEFAULT_PAGE_NUMBER;
     const pp = Number(limit) || Constants.FETCH_DATA_MIN_LIMIT;
-
     const result = await Promise.allSettled([
       this.model.countDocuments(query),
       this.model
@@ -67,28 +66,28 @@ export default class PaginationService<T> {
         .exec(),
     ]);
 
-    let status = 'success';
-    if (result[0].status == 'rejected' || result[1].status == 'rejected')
-      status = 'error';
+let status = 'success';
+if (result[0]?.status == 'rejected' || result[1]?.status == 'rejected')
+  status = 'error';
 
-    let first: PromiseFulfilledResult<number>;
-    let second: PromiseFulfilledResult<any>;
-    if (result[0].status == 'fulfilled') first = result[0];
-    if (result[1].status == 'fulfilled') second = result[1];
-    const total = first.value || 0;
-    const pages = Math.ceil(total / pp);
-    return {
-      data: second ? second.value || [] : [],
-      meta: {
-        pages,
-        prev: p > 1,
-        next: p < pages && pages > 0,
-        total,
-        page: p,
-        // sort: ,
-        limit: pp,
-      },
-      status,
-    };
+let first: PromiseFulfilledResult<number>;
+let second: PromiseFulfilledResult<any>;
+if (result[0].status == 'fulfilled') first = result[0];
+if (result[1].status == 'fulfilled') second = result[1];
+const total = first?.value || 0;
+const pages = Math.ceil(total / pp);
+return {
+  data: second ? second?.value || [] : [],
+  meta: {
+    pages,
+    prev: p > 1,
+    next: p < pages && pages > 0,
+    total,
+    page: p,
+    // sort: ,
+    limit: pp,
+  },
+  status,
+};
   }
 }

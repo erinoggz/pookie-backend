@@ -13,6 +13,8 @@ import { container } from 'tsyringe';
 import { LoggerService } from './app/service/logger.service';
 import StatusCodes from './app/lib/response/status-codes';
 import seeder from './app/seeds';
+import './app/utils/jobs';
+
 const logger: LoggerService = container.resolve(LoggerService);
 
 class Server {
