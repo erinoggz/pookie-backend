@@ -7,4 +7,5 @@ export enum StatusType {
   COMPLETED = 'COMPLETED',
   PENDING = 'PENDING',
   ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
 }

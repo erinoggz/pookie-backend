@@ -36,10 +36,22 @@ BookingRouter.post(
     bookingController.merchantGetAllBookings
   )
   .get(
+    '/sitter/:bookingId',
+    authMiddleware,
+    sitterMiddleware,
+    bookingController.merchantGetBooking
+  )
+  .get(
     '/parent',
     authMiddleware,
     parentMiddleware,
     bookingController.parentGetAllBookings
+  )
+  .get(
+    '/parent/:bookingId',
+    authMiddleware,
+    parentMiddleware,
+    bookingController.parentGetBooking
   );
 
 export default BookingRouter;

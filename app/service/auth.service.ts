@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { injectable } from 'tsyringe';
+import { StatusType } from '../common/Enum/bookingStatus';
 import { UserType } from '../common/Enum/userType';
 import {
   ErrnoException,
@@ -13,7 +14,10 @@ import Helpers from '../lib/helpers';
 import StatusCodes from '../lib/response/status-codes';
 import AccountVerification from '../model/account_verification.model';
 import PasswordReset from '../model/password-reset.model';
+import Plan from '../model/plan.model';
+import Subscription from '../model/subscription.model';
 import User, { IUserModel } from '../model/user.model';
+import plans from '../seeds/data/plan/plan';
 import { EmailService } from './email.service';
 
 @injectable()
@@ -25,6 +29,7 @@ export class AuthService {
   ): Promise<ISuccess | ErrnoException> => {
     const {
       email,
+      address,
       password,
       firstName,
       lastName,
@@ -58,6 +63,7 @@ export class AuthService {
       firstName,
       lastName,
       userType,
+      address,
       profilePicture,
       state,
       phoneNumber,
@@ -89,10 +95,26 @@ export class AuthService {
       email_data: `${input.otp}`,
     };
 
+    let plan_code = plans[0].plan_code;
+
+    if (userType === UserType.SITTER) {
+      plan_code = plans[1].plan_code;
+    }
+    const plan = await Plan.findOne({ plan_code });
+    const current_subscription = await Subscription.create({
+      name: plan.name,
+      user: user._id,
+      plan: plan._id,
+      amount: plan.amount,
+      currency: plan.currency,
+      status: StatusType.ACTIVE,
+    });
+    user.current_subscription = current_subscription._id;
     user = await user.save();
     // Make response not to send user password
     user.password = undefined;
     await this.emailService.sendEmail(emailData);
+
     return Helpers.success(
       user,
       'An Email has been sent to ' +
@@ -359,7 +381,13 @@ export class AuthService {
   };
 
   public me = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
-    const user = await User.findById(new Types.ObjectId(req.user.id));
+    const user = await User.findById(new Types.ObjectId(req.user.id)).populate({
+      path: 'current_subscription',
+      populate: {
+        path: 'plan',
+        model: 'Plan',
+      },
+    });
     user.password = undefined;
     return Helpers.success(user);
   };
