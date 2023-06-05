@@ -4,11 +4,11 @@ import { IBookingModel } from './interface/IBookingModel';
 // Create the booking schema
 const BookingSchema = new Schema<IBookingModel>(
   {
-    merchantId: {
+    merchant: {
       type: Schema.Types.ObjectId,
       ref: 'Users',
     },
-    userId: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: 'Users',
     },

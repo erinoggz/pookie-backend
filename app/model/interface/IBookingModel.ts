@@ -2,8 +2,8 @@ import { Document, Types } from 'mongoose';
 
 export interface IBookingModel extends Document {
   _id: Types.ObjectId;
-  merchantId: Types.ObjectId;
-  userId: Types.ObjectId;
+  merchant: Types.ObjectId;
+  user: Types.ObjectId;
   startDate: Date;
   endDate: Date;
   customerRequest: 'ACCEPTED' | 'DECLINED' | 'COMPLETED' | 'ACTIVE';

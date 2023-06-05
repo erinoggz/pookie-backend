@@ -91,6 +91,27 @@ class BookingController {
   };
 
   /**
+   * @route GET api/v1/booking/sitter/:bookingId
+   * @desc get booking endpoint
+   * @access Public.
+   */
+  merchantGetBooking = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.bookingService.merchantGetBooking(req);
+      return res.ok(
+        result?.data,
+        result?.message || 'Booking fetched successfully!'
+      );
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to fetch booking',
+        error?.code
+      );
+    }
+  };
+
+  /**
    * @route GET api/v1/booking/parent
    * @desc get all bookings endpoint
    * @access Public.
@@ -106,6 +127,27 @@ class BookingController {
       return res.serverError(
         error,
         error?.message || 'An error occured while trying to fetched bookings',
+        error?.code
+      );
+    }
+  };
+
+  /**
+   * @route GET api/v1/booking/parent/:bookingId
+   * @desc get booking endpoint
+   * @access Public.
+   */
+  parentGetBooking = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.bookingService.parentGetBooking(req);
+      return res.ok(
+        result?.data,
+        result?.message || 'Booking fetched successfully!'
+      );
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to fetc booking',
         error?.code
       );
     }

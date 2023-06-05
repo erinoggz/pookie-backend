@@ -16,6 +16,14 @@ import { LoggerService } from './logger.service';
 export class BookingService {
   pagination: PaginationService<IBookingModel>;
 
+  private populateQuery = [
+    {
+      path: 'merchant',
+      select:
+        '_id firstName lastName state country profilePicture dateOfBirth experience childcareCertification ratings',
+    },
+  ];
+
   constructor(private logger: LoggerService) {
     this.pagination = new PaginationService(Booking);
   }
@@ -39,13 +47,13 @@ export class BookingService {
 
     await Booking.findOneAndUpdate(
       {
-        userId: new Types.ObjectId(userId),
-        merchantId: new Types.ObjectId(merchantId),
+        user: new Types.ObjectId(userId),
+        merchant: new Types.ObjectId(merchantId),
         bookingStatus: StatusType.PENDING,
       },
       {
-        userId: new Types.ObjectId(userId),
-        merchantId: new Types.ObjectId(merchantId),
+        user: new Types.ObjectId(userId),
+        merchant: new Types.ObjectId(merchantId),
         startDate,
         endDate,
         address,
@@ -63,7 +71,7 @@ export class BookingService {
 
     const booking = await Booking.findOne({
       _id: new Types.ObjectId(bookingId),
-      merchantId: new Types.ObjectId(req.user.id),
+      merchant: new Types.ObjectId(req.user.id),
     });
     if (!booking)
       return Helpers.CustomException(
@@ -90,12 +98,14 @@ export class BookingService {
   ): Promise<ISuccess | ErrnoException> => {
     const { status } = req.query;
 
-    const bookings = await Booking.find({
-      bookingStatus: status,
-      merchantId: new Types.ObjectId(req.user.id),
-    });
+    const query = { merchant: new Types.ObjectId(req.user.id) };
+    if (status) {
+      query['bookingStatus'] = { $eq: status };
+    }
+    query['populate'] = this.populateQuery;
+    const response = await this.pagination.paginate(query);
 
-    return Helpers.success(bookings);
+    return Helpers.success(response);
   };
 
   public parentGetAllBookings = async (
@@ -103,12 +113,14 @@ export class BookingService {
   ): Promise<ISuccess | ErrnoException> => {
     const { status } = req.query;
 
-    const bookings = await Booking.find({
-      bookingStatus: status,
-      userId: new Types.ObjectId(req.user.id),
-    });
+    const query = { user: new Types.ObjectId(req.user.id) };
+    if (status) {
+      query['bookingStatus'] = { $eq: status };
+    }
+    query['populate'] = this.populateQuery;
+    const response = await this.pagination.paginate(query);
 
-    return Helpers.success(bookings);
+    return Helpers.success(response);
   };
 
   public parentUpdateBooking = async (
@@ -119,7 +131,7 @@ export class BookingService {
     await Booking.findOneAndUpdate(
       {
         _id: new Types.ObjectId(bookingId),
-        userId: new Types.ObjectId(req.user.id),
+        user: new Types.ObjectId(req.user.id),
       },
       {
         bookingStatus: status,
@@ -129,6 +141,28 @@ export class BookingService {
     );
 
     return Helpers.success(null);
+  };
+
+  public parentGetBooking = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { bookingId } = req.params;
+    const booking = await Booking.findOne({
+      user: new Types.ObjectId(req.user.id),
+      _id: bookingId,
+    });
+    return Helpers.success(booking);
+  };
+
+  public merchantGetBooking = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { bookingId } = req.params;
+    const booking = await Booking.findOne({
+      merchant: new Types.ObjectId(req.user.id),
+      _id: bookingId,
+    });
+    return Helpers.success(booking);
   };
 
   public validateActiveBooking = async (page = 1) => {
@@ -152,7 +186,6 @@ export class BookingService {
       return hours;
     }
 
-    // for each item in the array, make decision based on the status of ratings
     for (const item of result.data) {
       const hours = await calculateHours(item.startDate, item.endDate);
       const hour = Math.floor(hours);
