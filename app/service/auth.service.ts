@@ -29,6 +29,7 @@ export class AuthService {
   ): Promise<ISuccess | ErrnoException> => {
     const {
       email,
+      address,
       password,
       firstName,
       lastName,
@@ -62,6 +63,7 @@ export class AuthService {
       firstName,
       lastName,
       userType,
+      address,
       profilePicture,
       state,
       phoneNumber,
