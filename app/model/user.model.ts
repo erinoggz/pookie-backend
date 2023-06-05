@@ -67,7 +67,7 @@ const UserSchema = new Schema<IUserModel>(
     availability: {
       type: String,
       enum: ['AVAILABLE', 'BUSY', 'NOT_AVAILABLE'],
-      default: 'NOT_AVAILABLE',
+      default: 'AVAILABLE',
     },
     profilePicture: String,
     firstName: String,
