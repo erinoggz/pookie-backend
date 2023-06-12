@@ -20,7 +20,7 @@ export class BookingService {
     {
       path: 'merchant',
       select:
-        '_id firstName lastName state country profilePicture dateOfBirth experience childcareCertification ratings gardaCheck',
+        '_id firstName lastName state country profilePicture dateOfBirth experience childcareCertified ratings gardaCheck',
     },
   ];
 
