@@ -112,7 +112,8 @@ export class BookingService {
       'Booking Status',
       `${booking.merchant.lastName || ''} ${
         booking.merchant.firstName || ''
-      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`
+      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
+      { bookingId: booking._id, status }
     );
 
     return Helpers.success(null);
@@ -123,12 +124,13 @@ export class BookingService {
   ): Promise<ISuccess | ErrnoException> => {
     const { status } = req.query;
 
-    const query = { merchant: new Types.ObjectId(req.user.id) };
+    const query = { ...req.query, merchant: new Types.ObjectId(req.user.id) };
     if (status) {
       query['bookingStatus'] = { $eq: status };
     }
 
     query['sort'] = { updatedAt: 'desc' };
+    delete query['status'];
     query['populate'] = this.populateQuery;
     const response = await this.pagination.paginate(query);
 
@@ -140,12 +142,13 @@ export class BookingService {
   ): Promise<ISuccess | ErrnoException> => {
     const { status } = req.query;
 
-    const query = { user: new Types.ObjectId(req.user.id) };
+    const query = { ...req.query, user: new Types.ObjectId(req.user.id) };
     if (status) {
       query['bookingStatus'] = { $eq: status };
     }
 
     query['sort'] = { updatedAt: 'desc' };
+    delete query['status'];
     query['populate'] = this.populateQuery;
     const response = await this.pagination.paginate(query);
 
@@ -192,7 +195,8 @@ export class BookingService {
       'Booking Status',
       `${booking.user.lastName || ''} ${
         booking.user.firstName || ''
-      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`
+      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
+      { bookingId: booking._id, status }
     );
 
     return Helpers.success(null);

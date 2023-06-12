@@ -17,7 +17,12 @@ export class NotificationService {
     });
   }
 
-  sendNotification = async (token: string, title: string, message: string) => {
+  sendNotification = async (
+    token: string,
+    title: string,
+    message: string,
+    booking?: { bookingId: string; status: string }
+  ) => {
     try {
       const response = await this.client.post('/send', {
         notification: {
@@ -28,6 +33,8 @@ export class NotificationService {
         },
         data: {
           name: 'pookie',
+          bookingId: booking?.bookingId,
+          status: booking?.status,
         },
         to: token,
       });
