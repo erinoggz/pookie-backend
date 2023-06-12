@@ -126,8 +126,9 @@ export class BookingService {
     const query = { merchant: new Types.ObjectId(req.user.id) };
     if (status) {
       query['bookingStatus'] = { $eq: status };
-      query['sort'] = { updatedAt: 'desc' };
     }
+
+    query['sort'] = { updatedAt: 'desc' };
     query['populate'] = this.populateQuery;
     const response = await this.pagination.paginate(query);
 
@@ -142,8 +143,9 @@ export class BookingService {
     const query = { user: new Types.ObjectId(req.user.id) };
     if (status) {
       query['bookingStatus'] = { $eq: status };
-      query['sort'] = { updatedAt: 'desc' };
     }
+
+    query['sort'] = { updatedAt: 'desc' };
     query['populate'] = this.populateQuery;
     const response = await this.pagination.paginate(query);
 
