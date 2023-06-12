@@ -20,7 +20,7 @@ export class BookingService {
     {
       path: 'merchant',
       select:
-        '_id firstName lastName state country profilePicture dateOfBirth experience childcareCertification ratings',
+        '_id firstName lastName state country profilePicture dateOfBirth experience childcareCertification ratings gardaCheck',
     },
   ];
 
@@ -224,7 +224,7 @@ export class BookingService {
     query['merchantRequest'] = { $eq: StatusType.ACTIVE };
     query['bookingStatus'] = { $ne: StatusType.ACTIVE };
     query['page'] = page;
-    query['limit'] = 50;
+    query['limit'] = 100;
     query['sort'] = { updatedAt: 'desc' };
 
     const result = await this.pagination.paginate<IBookingModel>(query, []);
@@ -248,7 +248,7 @@ export class BookingService {
     query['merchantRequest'] = { $eq: StatusType.COMPLETED };
     query['bookingStatus'] = { $ne: StatusType.COMPLETED };
     query['page'] = page;
-    query['limit'] = 50;
+    query['limit'] = 100;
     query['sort'] = { updatedAt: 'desc' };
 
     const result = await this.pagination.paginate<IBookingModel>(query, []);
