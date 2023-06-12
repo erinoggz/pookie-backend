@@ -22,6 +22,10 @@ export class BookingService {
       select:
         '_id firstName lastName state country profilePicture dateOfBirth experience childcareCertified ratings gardaCheck',
     },
+    {
+      path: 'user',
+      select: '_id firstName lastName state country address profilePicture',
+    },
   ];
 
   constructor(private notificationService: NotificationService) {
