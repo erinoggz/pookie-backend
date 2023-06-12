@@ -6,6 +6,8 @@ export interface IBookingModel extends Document {
   user: Types.ObjectId;
   startDate: Date;
   endDate: Date;
+  actualStartDate: Date;
+  actualEndDate: Date;
   customerRequest: 'ACCEPTED' | 'DECLINED' | 'COMPLETED' | 'ACTIVE';
   merchantRequest: 'ACCEPTED' | 'PENDING' | 'DECLINED' | 'COMPLETED' | 'ACTIVE';
   totalHours: number;
