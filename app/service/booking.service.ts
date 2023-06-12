@@ -10,7 +10,7 @@ import { Types } from 'mongoose';
 import { IBookingModel } from '../model/interface/IBookingModel';
 import PaginationService from './pagination.service';
 import moment from 'moment';
-import { LoggerService } from './logger.service';
+import { NotificationService } from './notification.service';
 
 @injectable()
 export class BookingService {
@@ -24,7 +24,7 @@ export class BookingService {
     },
   ];
 
-  constructor(private logger: LoggerService) {
+  constructor(private notificationService: NotificationService) {
     this.pagination = new PaginationService(Booking);
   }
 
@@ -61,6 +61,11 @@ export class BookingService {
       { upsert: true, new: true }
     );
 
+    await this.notificationService.sendNotification(
+      merchant.device_token,
+      'New Booking Request',
+      'Please kindly check your Pookie app to accept or decline new booking request'
+    );
     return Helpers.success(null);
   };
 
@@ -69,10 +74,11 @@ export class BookingService {
   ): Promise<ISuccess | ErrnoException> => {
     const { bookingId, status } = req.body;
 
-    const booking = await Booking.findOne({
+    const booking: any = await Booking.findOne({
       _id: new Types.ObjectId(bookingId),
       merchant: new Types.ObjectId(req.user.id),
-    });
+    }).populate(['user', 'merchant']);
+
     if (!booking)
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
@@ -90,6 +96,14 @@ export class BookingService {
       { upsert: true, new: true }
     );
 
+    await this.notificationService.sendNotification(
+      booking.user.device_token,
+      'Booking Status',
+      `${booking.merchant.lastName || ''} ${
+        booking.merchant.firstName || ''
+      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`
+    );
+
     return Helpers.success(null);
   };
 
@@ -101,6 +115,7 @@ export class BookingService {
     const query = { merchant: new Types.ObjectId(req.user.id) };
     if (status) {
       query['bookingStatus'] = { $eq: status };
+      query['sort'] = { updatedAt: 'desc' };
     }
     query['populate'] = this.populateQuery;
     const response = await this.pagination.paginate(query);
@@ -116,6 +131,7 @@ export class BookingService {
     const query = { user: new Types.ObjectId(req.user.id) };
     if (status) {
       query['bookingStatus'] = { $eq: status };
+      query['sort'] = { updatedAt: 'desc' };
     }
     query['populate'] = this.populateQuery;
     const response = await this.pagination.paginate(query);
@@ -128,6 +144,11 @@ export class BookingService {
   ): Promise<ISuccess | ErrnoException> => {
     const { bookingId, status } = req.body;
 
+    const booking: any = await Booking.findOne({
+      _id: new Types.ObjectId(bookingId),
+      user: new Types.ObjectId(req.user.id),
+    }).populate(['user', 'merchant']);
+
     await Booking.findOneAndUpdate(
       {
         _id: new Types.ObjectId(bookingId),
@@ -138,6 +159,14 @@ export class BookingService {
         customerRequest: status,
       },
       { upsert: true, new: true }
+    );
+
+    await this.notificationService.sendNotification(
+      booking.merchant.device_token,
+      'Booking Status',
+      `${booking.user.lastName || ''} ${
+        booking.user.firstName || ''
+      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`
     );
 
     return Helpers.success(null);

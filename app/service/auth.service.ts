@@ -126,7 +126,7 @@ export class AuthService {
     req: IRequest,
     res: IResponse
   ): Promise<ISuccess | ErrnoException> => {
-    const { email, password } = req.body;
+    const { email, password, device_token } = req.body;
 
     const user = await User.findOne({
       email,
@@ -161,6 +161,7 @@ export class AuthService {
 
     // Set user last login
     user.lastLogin = new Date();
+    if (device_token) user.device_token = device_token;
     await user.save();
     // Make response not to send user password
     user.password = undefined;
