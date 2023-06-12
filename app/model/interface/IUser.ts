@@ -30,6 +30,7 @@ export interface IUser extends Document {
   profileSetupComplete: boolean;
   pets: string;
   rate: string;
+  device_token: string;
   language: string;
   firstAid: boolean;
   childcareCertification: string;

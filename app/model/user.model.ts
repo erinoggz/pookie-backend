@@ -73,6 +73,7 @@ const UserSchema = new Schema<IUserModel>(
     firstName: String,
     lastName: String,
     address: String,
+    device_token: String,
     aboutMe: String,
     state: String,
     country: String,

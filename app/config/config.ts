@@ -15,6 +15,10 @@ const configuration = {
     jwt_refresh_duration: process.env.JWT_REFRESH_DURATION || '1y',
     header_name: process.env.HEADER_NAME || 'x-auth-token',
   },
+  firebase: {
+    api_key: process.env.FIREBASE_API_KEY,
+    fcm_url: process.env.FCM_URL,
+  },
   redis: {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT),
