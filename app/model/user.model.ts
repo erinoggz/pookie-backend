@@ -89,8 +89,8 @@ const UserSchema = new Schema<IUserModel>(
     },
     gardaCheck: {
       type: String,
-      enum: ['PENDING', 'VERIFIED', 'UN_VERIFIED'],
-      default: 'UN_VERIFIED',
+      enum: ['PENDING', 'VERIFIED', 'UNVERIFIED'],
+      default: 'UNVERIFIED',
     },
     experience: String,
     ownCar: {
