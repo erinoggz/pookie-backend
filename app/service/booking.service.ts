@@ -112,7 +112,8 @@ export class BookingService {
       'Booking Status',
       `${booking.merchant.lastName || ''} ${
         booking.merchant.firstName || ''
-      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`
+      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
+      { bookingId: booking._id, status }
     );
 
     return Helpers.success(null);
@@ -194,7 +195,8 @@ export class BookingService {
       'Booking Status',
       `${booking.user.lastName || ''} ${
         booking.user.firstName || ''
-      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`
+      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
+      { bookingId: booking._id, status }
     );
 
     return Helpers.success(null);
