@@ -90,12 +90,23 @@ export class BookingService {
         _id: new Types.ObjectId(bookingId),
       },
       {
-        bookingStatus: status,
         merchantRequest: status,
       },
       { upsert: true, new: true }
     );
 
+    if (status === StatusType.DECLINED) {
+      await Booking.findOneAndUpdate(
+        {
+          _id: new Types.ObjectId(bookingId),
+        },
+        {
+          bookingStatus: status,
+          merchantRequest: status,
+        },
+        { upsert: true, new: true }
+      );
+    }
     await this.notificationService.sendNotification(
       booking.user.device_token,
       'Booking Status',
@@ -155,11 +166,24 @@ export class BookingService {
         user: new Types.ObjectId(req.user.id),
       },
       {
-        bookingStatus: status,
         customerRequest: status,
       },
       { upsert: true, new: true }
     );
+
+    if (status === StatusType.DECLINED) {
+      await Booking.findOneAndUpdate(
+        {
+          _id: new Types.ObjectId(bookingId),
+          user: new Types.ObjectId(req.user.id),
+        },
+        {
+          bookingStatus: status,
+          customerRequest: status,
+        },
+        { upsert: true, new: true }
+      );
+    }
 
     await this.notificationService.sendNotification(
       booking.merchant.device_token,
@@ -196,8 +220,8 @@ export class BookingService {
 
   public validateActiveBooking = async (page = 1) => {
     const query = {};
-    query['customerRequest'] = { $eq: StatusType.ACTIVE };
-    query['merchantRequest'] = { $eq: StatusType.ACTIVE };
+    query['customerRequest'] = { $eq: StatusType.ACCEPTED };
+    query['merchantRequest'] = { $eq: StatusType.ACCEPTED };
     query['bookingStatus'] = { $ne: StatusType.ACTIVE };
     query['page'] = page;
     query['limit'] = 50;
@@ -227,6 +251,30 @@ export class BookingService {
 
     if (result.meta.page < result.meta.pages) {
       await this.validateActiveBooking(page + 1);
+    }
+  };
+
+  public validateCompletedBooking = async (page = 1) => {
+    const query = {};
+    query['customerRequest'] = { $eq: StatusType.COMPLETED };
+    query['merchantRequest'] = { $eq: StatusType.COMPLETED };
+    query['bookingStatus'] = { $ne: StatusType.COMPLETED };
+    query['page'] = page;
+    query['limit'] = 50;
+    query['sort'] = { updatedAt: 'desc' };
+
+    const result = await this.pagination.paginate<IBookingModel>(query, []);
+
+    for (const item of result.data) {
+      await Booking.findByIdAndUpdate(
+        item._id,
+        { bookingStatus: StatusType.COMPLETED },
+        { new: true }
+      );
+    }
+
+    if (result.meta.page < result.meta.pages) {
+      await this.validateCompletedBooking(page + 1);
     }
   };
 }

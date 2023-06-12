@@ -11,3 +11,10 @@ cron.schedule('* * * * *', () => {
   bookingService.validateActiveBooking(1);
   logger.log('Completed running job to validate active bookings');
 });
+
+
+cron.schedule('* * * * *', () => {
+  logger.log('Running job to validate completed booking every minute');
+  bookingService.validateCompletedBooking(1);
+  logger.log('Completed running job to validate completed bookings');
+});
