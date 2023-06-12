@@ -220,8 +220,8 @@ export class BookingService {
 
   public validateActiveBooking = async (page = 1) => {
     const query = {};
-    query['customerRequest'] = { $eq: StatusType.ACCEPTED };
-    query['merchantRequest'] = { $eq: StatusType.ACCEPTED };
+    query['customerRequest'] = { $eq: StatusType.ACTIVE };
+    query['merchantRequest'] = { $eq: StatusType.ACTIVE };
     query['bookingStatus'] = { $ne: StatusType.ACTIVE };
     query['page'] = page;
     query['limit'] = 50;
@@ -229,22 +229,10 @@ export class BookingService {
 
     const result = await this.pagination.paginate<IBookingModel>(query, []);
 
-    async function calculateHours(start, end) {
-      const startDate = moment(start);
-      const endDate = moment(end);
-
-      const duration = moment.duration(endDate.diff(startDate));
-      const hours = duration.asHours();
-
-      return hours;
-    }
-
     for (const item of result.data) {
-      const hours = await calculateHours(item.startDate, item.endDate);
-      const hour = Math.floor(hours);
       await Booking.findByIdAndUpdate(
         item._id,
-        { bookingStatus: 'ACTIVE', totalHours: hour },
+        { bookingStatus: 'ACTIVE', actualStartDate: new Date() },
         { new: true }
       );
     }
@@ -265,10 +253,27 @@ export class BookingService {
 
     const result = await this.pagination.paginate<IBookingModel>(query, []);
 
+    async function calculateHours(start, end) {
+      const startDate = moment(start);
+      const endDate = moment(end);
+
+      const duration = moment.duration(endDate.diff(startDate));
+      const hours = duration.asHours();
+
+      return hours;
+    }
+
     for (const item of result.data) {
+      const hours = await calculateHours(item.actualStartDate, new Date());
+      const hour = Math.floor(hours);
+
       await Booking.findByIdAndUpdate(
         item._id,
-        { bookingStatus: StatusType.COMPLETED },
+        {
+          bookingStatus: StatusType.COMPLETED,
+          totalHours: hour,
+          actualEndDate: new Date(),
+        },
         { new: true }
       );
     }

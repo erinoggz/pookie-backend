@@ -18,6 +18,12 @@ const BookingSchema = new Schema<IBookingModel>(
     endDate: {
       type: Date,
     },
+    actualStartDate: {
+      type: Date,
+    },
+    actualEndDate: {
+      type: Date,
+    },
     customerRequest: {
       type: String,
       enum: ['ACCEPTED', 'DECLINED', 'COMPLETED', 'ACTIVE'],
