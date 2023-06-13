@@ -43,7 +43,7 @@ const BookingSchema = new Schema<IBookingModel>(
     },
     bookingStatus: {
       type: String,
-      enum: ['ACCEPTED', 'PENDING', 'DECLINED', 'ACTIVE', 'COMPLETED'],
+      enum: ['ACCEPTED', 'PENDING', 'DECLINED', 'WAITING', 'ACTIVE', 'COMPLETED'],
       default: 'PENDING',
     },
     customerRated: {
