@@ -12,7 +12,13 @@ export interface IBookingModel extends Document {
   merchantRequest: 'ACCEPTED' | 'PENDING' | 'DECLINED' | 'COMPLETED' | 'ACTIVE';
   totalHours: number;
   address: string;
-  bookingStatus: 'ACCEPTED' | 'PENDING' | 'DECLINED' | 'ACTIVE' | 'COMPLETED';
+  bookingStatus:
+    | 'ACCEPTED'
+    | 'PENDING'
+    | 'DECLINED'
+    | 'WAITING'
+    | 'ACTIVE'
+    | 'COMPLETED';
   customerRated: boolean;
   totalAmount: number;
   status: boolean;

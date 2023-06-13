@@ -89,16 +89,6 @@ export class BookingService {
         `Booking does not exist`
       );
 
-    await Booking.findOneAndUpdate(
-      {
-        _id: new Types.ObjectId(bookingId),
-      },
-      {
-        merchantRequest: status,
-      },
-      { upsert: true, new: true }
-    );
-
     if (status === StatusType.DECLINED) {
       await Booking.findOneAndUpdate(
         {
@@ -110,15 +100,35 @@ export class BookingService {
         },
         { upsert: true, new: true }
       );
+      await this.notificationService.sendNotification(
+        booking.user.device_token,
+        'Booking Status',
+        `${booking.merchant.lastName || ''} ${
+          booking.merchant.firstName || ''
+        } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
+        { bookingId: booking._id, status: StatusType.DECLINED }
+      );
+    } else {
+      await Booking.findOneAndUpdate(
+        {
+          _id: new Types.ObjectId(bookingId),
+        },
+        {
+          bookingStatus: StatusType.WAITING,
+          merchantRequest: status,
+        },
+        { upsert: true, new: true }
+      );
+      await this.notificationService.sendNotification(
+        booking.user.device_token,
+        'Booking Status',
+        `${booking.merchant.lastName || ''} ${
+          booking.merchant.firstName || ''
+        } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
+        { bookingId: booking._id, status: StatusType.WAITING }
+      );
     }
-    await this.notificationService.sendNotification(
-      booking.user.device_token,
-      'Booking Status',
-      `${booking.merchant.lastName || ''} ${
-        booking.merchant.firstName || ''
-      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
-      { bookingId: booking._id, status }
-    );
+    
 
     return Helpers.success(null);
   };
@@ -169,17 +179,6 @@ export class BookingService {
       user: new Types.ObjectId(req.user.id),
     }).populate(['user', 'merchant']);
 
-    await Booking.findOneAndUpdate(
-      {
-        _id: new Types.ObjectId(bookingId),
-        user: new Types.ObjectId(req.user.id),
-      },
-      {
-        customerRequest: status,
-      },
-      { upsert: true, new: true }
-    );
-
     if (status === StatusType.DECLINED) {
       await Booking.findOneAndUpdate(
         {
@@ -192,16 +191,35 @@ export class BookingService {
         },
         { upsert: true, new: true }
       );
+      await this.notificationService.sendNotification(
+        booking.merchant.device_token,
+        'Booking Status',
+        `${booking.user.lastName || ''} ${
+          booking.user.firstName || ''
+        } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
+        { bookingId: booking._id, status: StatusType.DECLINED }
+      );
+    } else {
+      await Booking.findOneAndUpdate(
+        {
+          _id: new Types.ObjectId(bookingId),
+          user: new Types.ObjectId(req.user.id),
+        },
+        {
+          bookingStatus: StatusType.WAITING,
+          customerRequest: status,
+        },
+        { upsert: true, new: true }
+      );
+      await this.notificationService.sendNotification(
+        booking.merchant.device_token,
+        'Booking Status',
+        `${booking.user.lastName || ''} ${
+          booking.user.firstName || ''
+        } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
+        { bookingId: booking._id, status: StatusType.WAITING }
+      );
     }
-
-    await this.notificationService.sendNotification(
-      booking.merchant.device_token,
-      'Booking Status',
-      `${booking.user.lastName || ''} ${
-        booking.user.firstName || ''
-      } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
-      { bookingId: booking._id, status }
-    );
 
     return Helpers.success(null);
   };
