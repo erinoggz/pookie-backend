@@ -235,7 +235,6 @@ export class BookingService {
     query['bookingStatus'] = { $ne: StatusType.ACTIVE };
     query['page'] = page;
     query['limit'] = 100;
-    query['sort'] = { updatedAt: 'desc' };
 
     const result = await this.pagination.paginate<IBookingModel>(query, []);
 
@@ -259,7 +258,6 @@ export class BookingService {
     query['bookingStatus'] = { $ne: StatusType.COMPLETED };
     query['page'] = page;
     query['limit'] = 100;
-    query['sort'] = { updatedAt: 'desc' };
 
     const result = await this.pagination.paginate<IBookingModel>(query, []);
 
@@ -283,6 +281,31 @@ export class BookingService {
           bookingStatus: StatusType.COMPLETED,
           totalHours: hour,
           actualEndDate: new Date(),
+        },
+        { new: true }
+      );
+    }
+
+    if (result.meta.page < result.meta.pages) {
+      await this.validateCompletedBooking(page + 1);
+    }
+  };
+
+  public validateAcceptedBooking = async (page = 1) => {
+    const query = {};
+    query['customerRequest'] = { $eq: StatusType.ACCEPTED };
+    query['merchantRequest'] = { $eq: StatusType.ACCEPTED };
+    query['bookingStatus'] = { $ne: StatusType.ACCEPTED };
+    query['page'] = page;
+    query['limit'] = 100;
+
+    const result = await this.pagination.paginate<IBookingModel>(query, []);
+
+    for (const item of result.data) {
+      await Booking.findByIdAndUpdate(
+        item._id,
+        {
+          bookingStatus: StatusType.ACCEPTED,
         },
         { new: true }
       );
