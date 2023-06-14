@@ -89,7 +89,7 @@ export class BookingService {
         `Booking does not exist`
       );
 
-    if (status === StatusType.DECLINED) {
+    if (status === StatusType.DECLINED || status === StatusType.ACCEPTED) {
       await Booking.findOneAndUpdate(
         {
           _id: new Types.ObjectId(bookingId),
@@ -106,7 +106,7 @@ export class BookingService {
         `${booking.merchant.lastName || ''} ${
           booking.merchant.firstName || ''
         } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
-        { bookingId: booking._id, status: StatusType.DECLINED }
+        { bookingId: booking._id, status }
       );
     } else {
       await Booking.findOneAndUpdate(
@@ -197,7 +197,7 @@ export class BookingService {
         `${booking.user.lastName || ''} ${
           booking.user.firstName || ''
         } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
-        { bookingId: booking._id, status: StatusType.DECLINED }
+        { bookingId: booking._id, status }
       );
     } else {
       await Booking.findOneAndUpdate(
