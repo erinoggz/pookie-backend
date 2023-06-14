@@ -18,7 +18,7 @@ class AuthController {
     } catch (error) {
       return res.serverError(
         error,
-        error?.message || 'An error occured while trying to login',
+        error?.message || 'An error occured while trying to Register',
         error?.code
       );
     }
