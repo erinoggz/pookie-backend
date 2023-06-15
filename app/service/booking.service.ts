@@ -106,7 +106,12 @@ export class BookingService {
         `${booking.merchant.lastName || ''} ${
           booking.merchant.firstName || ''
         } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
-        { bookingId: booking._id, status }
+        {
+          bookingId: booking._id,
+          status,
+          requestType: status,
+          requestInitiator: 'merchant',
+        }
       );
     } else {
       await Booking.findOneAndUpdate(
@@ -125,10 +130,14 @@ export class BookingService {
         `${booking.merchant.lastName || ''} ${
           booking.merchant.firstName || ''
         } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
-        { bookingId: booking._id, status: StatusType.WAITING }
+        {
+          bookingId: booking._id,
+          status: StatusType.WAITING,
+          requestType: status,
+          requestInitiator: 'merchant',
+        }
       );
     }
-    
 
     return Helpers.success(null);
   };
@@ -197,7 +206,12 @@ export class BookingService {
         `${booking.user.lastName || ''} ${
           booking.user.firstName || ''
         } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
-        { bookingId: booking._id, status }
+        {
+          bookingId: booking._id,
+          status,
+          requestType: status,
+          requestInitiator: 'parent',
+        }
       );
     } else {
       await Booking.findOneAndUpdate(
@@ -217,7 +231,12 @@ export class BookingService {
         `${booking.user.lastName || ''} ${
           booking.user.firstName || ''
         } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
-        { bookingId: booking._id, status: StatusType.WAITING }
+        {
+          bookingId: booking._id,
+          status: StatusType.WAITING,
+          requestType: status,
+          requestInitiator: 'parent',
+        }
       );
     }
 

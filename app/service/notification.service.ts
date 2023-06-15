@@ -21,7 +21,12 @@ export class NotificationService {
     token: string,
     title: string,
     message: string,
-    booking?: { bookingId: string; status: string }
+    booking?: {
+      bookingId: string;
+      status: string;
+      requestType: string;
+      requestInitiator: string;
+    }
   ) => {
     try {
       const response = await this.client.post('/send', {
