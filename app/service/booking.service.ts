@@ -210,7 +210,7 @@ export class BookingService {
           bookingId: booking._id,
           status,
           requestType: status,
-          requestInitiator: 'parent',
+          requestInitiator: 'customer',
         }
       );
     } else {
@@ -235,7 +235,7 @@ export class BookingService {
           bookingId: booking._id,
           status: StatusType.WAITING,
           requestType: status,
-          requestInitiator: 'parent',
+          requestInitiator: 'customer',
         }
       );
     }
