@@ -40,6 +40,8 @@ export class NotificationService {
           name: 'pookie',
           bookingId: booking?.bookingId,
           status: booking?.status,
+          requestType: booking.requestType,
+          requestInitiator: booking.requestInitiator,
         },
         to: token,
       });
