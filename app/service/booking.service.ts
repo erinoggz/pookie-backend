@@ -298,19 +298,36 @@ export class BookingService {
 
     const result = await this.pagination.paginate<IBookingModel>(query, []);
 
-    async function calculateHours(start, end) {
-      const startDate = moment(start);
-      const endDate = moment(end);
-
-      const duration = moment.duration(endDate.diff(startDate));
-      const hours = duration.asHours();
-
-      return hours;
+    async function calculateHours(startD: Date, endD: Date, actualStartD: Date) {
+      const startDate = moment(startD);
+      const endDate = moment(endD).add(1, 'day');
+      const actualStartDate = moment(actualStartD);
+      const actualEndDate = moment(new Date()).add(1, 'day');
+      const startTime = startDate.utc().format('HH:mm:ss');
+      const endTime = endDate.utc().format('HH:mm:ss');
+      const actualStartTime = actualStartDate.utc().format('HH:mm:ss');
+      const actualEndTime = actualEndDate.format('HH:mm:ss');
+      const date = '1970-01-01';
+      const dateTime1 = moment(`${date} ${startTime}`);
+      const dateTime2 = moment(`${date} ${endTime}`);
+      const dateTime3 = moment(`${date} ${actualStartTime}`);
+      const dateTime4 = moment(`${date} ${actualEndTime}`);
+      const hoursdif = dateTime2.diff(dateTime1, 'hours');
+      const days = endDate.diff(startDate, 'days');
+      const actualDays = actualEndDate.diff(actualStartDate, 'days');
+      let noHrs = dateTime4.diff(dateTime3, 'hours');
+      if (days > 1) {
+        noHrs = actualDays * hoursdif;
+      }
+      return noHrs;
     }
 
     for (const item of result.data) {
-      const hours = await calculateHours(item.actualStartDate, new Date());
-      const hour = Math.floor(hours);
+      const hour = await calculateHours(
+        item.startDate,
+        item.endDate,
+        item.actualStartDate
+      );
 
       await Booking.findByIdAndUpdate(
         item._id,
