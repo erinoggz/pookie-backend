@@ -15,6 +15,6 @@ RatingsRouter.post(
   parentMiddleware,
   ratingsValidator.addRatings,
   ratingsController.addRatings
-);
+).get('/:merchant', authMiddleware, ratingsController.getMerchantReviews);
 
 export default RatingsRouter;

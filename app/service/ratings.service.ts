@@ -14,6 +14,23 @@ import User from '../model/user.model';
 export class RatingsService {
   pagination: PaginationService<IRatings>;
 
+  private populateQuery = [
+    {
+      path: 'merchant',
+      select:
+        '_id firstName lastName state country rate profilePicture dateOfBirth experience childcareCertified gardaCheck',
+    },
+    {
+      path: 'customer',
+      select: '_id firstName lastName state country address profilePicture',
+    },
+    {
+      path: 'booking',
+      select:
+        '_id bookingStatus merchantRequest customerRequest actualEndDate actualStartDate startDate endDate',
+    },
+  ];
+
   constructor() {
     this.pagination = new PaginationService(Ratings);
   }
@@ -50,6 +67,21 @@ export class RatingsService {
       { upsert: true, new: true }
     );
     return Helpers.success(null);
+  };
+
+  public getMerchantReviews = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { merchant } = req.params;
+
+    const query = {};
+    query['merchant'] = { $eq: new Types.ObjectId(merchant) };
+    query['resolved'] = { $eq: true };
+    query['sort'] = { updatedAt: 'desc' };
+    query['populate'] = this.populateQuery;
+    const response = await this.pagination.paginate(query);
+
+    return Helpers.success(response);
   };
 
   async updateMerchantRatings(page = 1) {
