@@ -38,7 +38,7 @@ export class UserService {
     for (const key in query) {
       if (Object.prototype.hasOwnProperty.call(query, key)) {
         const filter = query[key];
-        if (filter === 'all') {
+        if (filter?.toLowerCase() === 'all') {
           delete query[key];
         }
       }
