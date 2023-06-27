@@ -41,33 +41,33 @@ const UserSchema = new Schema<IUserModel>(
     urlKey: { type: String, slug: ['firstName', 'lastName'], unique: true },
     gender: {
       type: String,
-      enum: ['MALE', 'FEMALE', 'NOT_SPECIFIED'],
-      default: 'NOT_SPECIFIED',
+      enum: ['male', 'female', 'not_specified'],
+      default: 'not_specified',
     },
     userType: {
       type: String,
-      enum: Object.values(['PARENT', 'SITTER', 'GRIND']).concat([null]),
+      enum: Object.values(['parent', 'sitter', 'grind']).concat([null]),
     },
     job: {
       type: String,
-      enum: Object.values(['SITTER', 'AU_PAIR', 'NANNY', 'GRIND']).concat([null]),
+      enum: Object.values(['sitter', 'au_pair', 'nanny', 'grind']).concat([null]),
     },
     lookingFor: {
       type: String,
-      enum: Object.values(['SITTER', 'AU_PAIR', 'NANNY', 'GRIND']).concat([null]),
+      enum: Object.values(['sitter', 'au_pair', 'nanny', 'grind']).concat([null]),
     },
     meansOfVerification: {
       type: String,
       enum: Object.values([
-        'INTERNATIONAL_PASSPORT',
-        'DRIVERS_LICENSE',
-        'NATIONAL_IDENTITY_CARD',
+        'international_passport',
+        'drivers_license',
+        'national_identity_card',
       ]).concat([null]),
     },
     availability: {
       type: String,
-      enum: ['AVAILABLE', 'BUSY', 'NOT_AVAILABLE'],
-      default: 'AVAILABLE',
+      enum: ['available', 'busy', 'not_available'],
+      default: 'available',
     },
     profilePicture: String,
     firstName: String,
@@ -89,8 +89,8 @@ const UserSchema = new Schema<IUserModel>(
     },
     gardaCheck: {
       type: String,
-      enum: ['PENDING', 'VERIFIED', 'UNVERIFIED'],
-      default: 'UNVERIFIED',
+      enum: ['pending', 'verified', 'unverified'],
+      default: 'unverified',
     },
     experience: String,
     ownCar: {

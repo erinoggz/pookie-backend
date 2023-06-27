@@ -43,7 +43,7 @@ export class UserService {
         }
       }
     }
-    query['userType'] = { $eq: UserType.SITTER };
+    query['userType'] = { $eq: UserType.sitter };
     if (srch) {
       const searchQuery = {
         $or: [
@@ -67,7 +67,7 @@ export class UserService {
 
     const user = await User.findById(new Types.ObjectId(req.user.id));
     user.gardaCheckdoc = gardaCheckdoc;
-    user.gardaCheck = 'PENDING';
+    user.gardaCheck = 'pending';
     await user.save();
     return Helpers.success(null);
   };

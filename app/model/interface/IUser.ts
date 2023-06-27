@@ -6,9 +6,9 @@ export interface IUser extends Document {
   password: string;
   phoneNumber: string;
   current_subscription: Types.ObjectId;
-  gender: 'MALE' | 'FEMALE' | 'NOT_SPECIFIED';
+  gender: 'male' | 'female' | 'not_specified';
   profilePicture: string;
-  userType: 'PARENT' | 'SITTER' | 'GRIND';
+  userType: 'parent' | 'sitter' | 'grind';
   firstName: string;
   referredBy: string;
   lastName: string;
@@ -20,7 +20,7 @@ export interface IUser extends Document {
   dateOfBirth: string;
   training: boolean;
   smoker: boolean;
-  gardaCheck: 'PENDING' | 'VERIFIED' | 'UNVERIFIED';
+  gardaCheck: 'pending' | 'verified' | 'unverified';
   gardaCheckdoc: string;
   ownCar: boolean;
   country: string;
@@ -36,13 +36,13 @@ export interface IUser extends Document {
   childcareCertification: string;
   cpr: string;
   ownTransport: boolean;
-  availability: 'AVAILABLE' | 'BUSY' | 'NOT_AVAILABLE';
-  job: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
-  lookingFor: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
+  availability: 'available' | 'busy' | 'not_available';
+  job: 'sitter' | 'au_pair' | 'nanny' | 'grind';
+  lookingFor: 'sitter' | 'au_pair' | 'nanny' | 'grind';
   meansOfVerification:
-    | 'INTERNATIONAL_PASSPORT'
-    | 'DRIVERS_LICENSE'
-    | 'NATIONAL_IDENTITY_CARD';
+    | 'international_passport'
+    | 'drivers_license'
+    | 'national_identity_card';
   verificationData: string;
   socialCredentials: object;
   lastLogin: Date;

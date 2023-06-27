@@ -12,5 +12,5 @@ export interface ISubscriptionModel extends Document {
   expiry_date: Date;
   duration: number;
   currency: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'COMPLETE' | 'CANCLED';
+  status: 'active' | 'inactive' | 'complete' | 'cancled';
 }

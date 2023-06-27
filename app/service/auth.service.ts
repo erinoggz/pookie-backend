@@ -97,7 +97,7 @@ export class AuthService {
 
     let plan_code = plans[0].plan_code;
 
-    if (userType === UserType.SITTER) {
+    if (userType === UserType.sitter) {
       plan_code = plans[1].plan_code;
     }
     const plan = await Plan.findOne({ plan_code });
@@ -107,7 +107,7 @@ export class AuthService {
       plan: plan._id,
       amount: plan.amount,
       currency: plan.currency,
-      status: StatusType.ACTIVE,
+      status: StatusType.active,
     });
     user.current_subscription = current_subscription._id;
     user = await user.save();
@@ -399,7 +399,7 @@ export class AuthService {
     const userData = {};
     let validateData = [];
 
-    if (req.user.userType === UserType.PARENT) {
+    if (req.user.userType === UserType.parent) {
       validateData = [
         'meansOfVerification',
         'verificationData',
@@ -421,7 +421,7 @@ export class AuthService {
       ];
     }
 
-    if (req.user.userType === UserType.SITTER) {
+    if (req.user.userType === UserType.sitter) {
       validateData = [
         'firstAid',
         'gardaCheck',
