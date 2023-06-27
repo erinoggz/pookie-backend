@@ -8,17 +8,17 @@ export interface IBookingModel extends Document {
   endDate: Date;
   actualStartDate: Date;
   actualEndDate: Date;
-  customerRequest: 'ACCEPTED' | 'DECLINED' | 'COMPLETED' | 'ACTIVE';
-  merchantRequest: 'ACCEPTED' | 'PENDING' | 'DECLINED' | 'COMPLETED' | 'ACTIVE';
+  customerRequest: 'accepted' | 'declined' | 'completed' | 'active';
+  merchantRequest: 'accepted' | 'pending' | 'declined' | 'completed' | 'active';
   totalHours: number;
   address: string;
   bookingStatus:
-    | 'ACCEPTED'
-    | 'PENDING'
-    | 'DECLINED'
-    | 'WAITING'
-    | 'ACTIVE'
-    | 'COMPLETED';
+    | 'accepted'
+    | 'pending'
+    | 'declined'
+    | 'waiting'
+    | 'active'
+    | 'completed';
   customerRated: boolean;
   totalAmount: number;
   status: boolean;

@@ -1,5 +1,5 @@
 export enum UserType {
-  PARENT = 'PARENT',
-  SITTER = 'SITTER',
-  GRIND = 'GRIND',
+  parent = 'parent',
+  sitter = 'sitter',
+  grind = 'grind',
 }

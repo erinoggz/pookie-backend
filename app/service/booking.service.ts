@@ -43,7 +43,7 @@ export class BookingService {
         StatusCodes.BAD_REQUEST,
         `Sitter does not exist or has a disabled Account!`
       );
-    if (merchant.availability !== StatusType.AVAILABLE)
+    if (merchant.availability !== StatusType.available)
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
         `Sitter is currently not available!`
@@ -53,7 +53,7 @@ export class BookingService {
       {
         user: new Types.ObjectId(userId),
         merchant: new Types.ObjectId(merchantId),
-        bookingStatus: StatusType.PENDING,
+        bookingStatus: StatusType.pending,
       },
       {
         user: new Types.ObjectId(userId),
@@ -89,7 +89,7 @@ export class BookingService {
         `Booking does not exist`
       );
 
-    if (status === StatusType.DECLINED || status === StatusType.ACCEPTED) {
+    if (status === StatusType.declined || status === StatusType.accepted) {
       await Booking.findOneAndUpdate(
         {
           _id: new Types.ObjectId(bookingId),
@@ -119,7 +119,7 @@ export class BookingService {
           _id: new Types.ObjectId(bookingId),
         },
         {
-          bookingStatus: StatusType.WAITING,
+          bookingStatus: StatusType.waiting,
           merchantRequest: status,
         },
         { upsert: true, new: true }
@@ -132,7 +132,7 @@ export class BookingService {
         } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
         {
           bookingId: booking._id,
-          status: StatusType.WAITING,
+          status: StatusType.waiting,
           requestType: status,
           requestInitiator: 'merchant',
         }
@@ -188,7 +188,7 @@ export class BookingService {
       user: new Types.ObjectId(req.user.id),
     }).populate(['user', 'merchant']);
 
-    if (status === StatusType.DECLINED) {
+    if (status === StatusType.declined) {
       await Booking.findOneAndUpdate(
         {
           _id: new Types.ObjectId(bookingId),
@@ -220,7 +220,7 @@ export class BookingService {
           user: new Types.ObjectId(req.user.id),
         },
         {
-          bookingStatus: StatusType.WAITING,
+          bookingStatus: StatusType.waiting,
           customerRequest: status,
         },
         { upsert: true, new: true }
@@ -233,7 +233,7 @@ export class BookingService {
         } recently updated booking status to ${status.toLowerCase()} please check your Pookie app`,
         {
           bookingId: booking._id,
-          status: StatusType.WAITING,
+          status: StatusType.waiting,
           requestType: status,
           requestInitiator: 'customer',
         }
@@ -267,9 +267,9 @@ export class BookingService {
 
   public validateActiveBooking = async (page = 1) => {
     const query = {};
-    query['customerRequest'] = { $eq: StatusType.ACTIVE };
-    query['merchantRequest'] = { $eq: StatusType.ACTIVE };
-    query['bookingStatus'] = { $ne: StatusType.ACTIVE };
+    query['customerRequest'] = { $eq: StatusType.active };
+    query['merchantRequest'] = { $eq: StatusType.active };
+    query['bookingStatus'] = { $ne: StatusType.active };
     query['page'] = page;
     query['limit'] = 100;
 
@@ -278,7 +278,7 @@ export class BookingService {
     for (const item of result.data) {
       await Booking.findByIdAndUpdate(
         item._id,
-        { bookingStatus: 'ACTIVE', actualStartDate: new Date() },
+        { bookingStatus: 'active', actualStartDate: new Date() },
         { new: true }
       );
     }
@@ -290,9 +290,9 @@ export class BookingService {
 
   public validateCompletedBooking = async (page = 1) => {
     const query = {};
-    query['customerRequest'] = { $eq: StatusType.COMPLETED };
-    query['merchantRequest'] = { $eq: StatusType.COMPLETED };
-    query['bookingStatus'] = { $ne: StatusType.COMPLETED };
+    query['customerRequest'] = { $eq: StatusType.completed };
+    query['merchantRequest'] = { $eq: StatusType.completed };
+    query['bookingStatus'] = { $ne: StatusType.completed };
     query['page'] = page;
     query['limit'] = 100;
 
@@ -332,7 +332,7 @@ export class BookingService {
       await Booking.findByIdAndUpdate(
         item._id,
         {
-          bookingStatus: StatusType.COMPLETED,
+          bookingStatus: StatusType.completed,
           totalHours: hour,
           actualEndDate: new Date(),
         },
@@ -347,9 +347,9 @@ export class BookingService {
 
   public validateAcceptedBooking = async (page = 1) => {
     const query = {};
-    query['customerRequest'] = { $eq: StatusType.ACCEPTED };
-    query['merchantRequest'] = { $eq: StatusType.ACCEPTED };
-    query['bookingStatus'] = { $ne: StatusType.ACCEPTED };
+    query['customerRequest'] = { $eq: StatusType.accepted };
+    query['merchantRequest'] = { $eq: StatusType.accepted };
+    query['bookingStatus'] = { $ne: StatusType.accepted };
     query['page'] = page;
     query['limit'] = 100;
 
@@ -359,7 +359,7 @@ export class BookingService {
       await Booking.findByIdAndUpdate(
         item._id,
         {
-          bookingStatus: StatusType.ACCEPTED,
+          bookingStatus: StatusType.accepted,
         },
         { new: true }
       );

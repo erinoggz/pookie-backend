@@ -12,8 +12,8 @@ const PlanSchema = new Schema<IPlanModel>(
     },
     plan_type: {
       type: String,
-      enum: ['FREE', 'STANDARD', 'PREMIUM'],
-      default: 'FREE',
+      enum: ['free', 'standard', 'premium'],
+      default: 'free',
     },
     unlimited_messages: {
       type: Boolean,
@@ -49,7 +49,7 @@ const PlanSchema = new Schema<IPlanModel>(
     },
     userType: {
       type: String,
-      enum: Object.values(['PARENT', 'SITTER', 'GRIND']).concat([null]),
+      enum: Object.values(['parent', 'sitter', 'grind']).concat([null]),
     },
     interval: {
       type: String,

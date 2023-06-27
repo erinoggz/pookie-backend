@@ -5,7 +5,7 @@ export interface IPlanModel extends Document {
   name: string;
   label: string;
   interval: 'hourly' | 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'annually';
-  plan_type: 'FREE' | 'STANDARD' | 'PREMIUM';
+  plan_type: 'free' | 'standard' | 'premium';
   unlimited_messages: boolean;
   video_call: boolean;
   access_to_verified_sitters: boolean;
@@ -14,7 +14,7 @@ export interface IPlanModel extends Document {
   emergency_sitter_support: boolean;
   monthly_rewards: boolean;
   booking_fee: boolean;
-  userType: 'PARENT' | 'SITTER' | 'GRIND';
+  userType: 'parent' | 'sitter' | 'grind';
   amount: number;
   plan_code: string;
   send_invoices: boolean;

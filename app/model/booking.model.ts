@@ -26,13 +26,13 @@ const BookingSchema = new Schema<IBookingModel>(
     },
     customerRequest: {
       type: String,
-      enum: ['ACCEPTED', 'DECLINED', 'COMPLETED', 'ACTIVE'],
-      default: 'ACCEPTED',
+      enum: ['accepted', 'declined', 'completed', 'active'],
+      default: 'accepted',
     },
     merchantRequest: {
       type: String,
-      enum: ['ACCEPTED', 'PENDING', 'DECLINED', 'COMPLETED', 'ACTIVE'],
-      default: 'PENDING',
+      enum: ['accepted', 'pending', 'declined', 'completed', 'active'],
+      default: 'pending',
     },
     totalHours: {
       type: Number,
@@ -43,8 +43,8 @@ const BookingSchema = new Schema<IBookingModel>(
     },
     bookingStatus: {
       type: String,
-      enum: ['ACCEPTED', 'PENDING', 'DECLINED', 'WAITING', 'ACTIVE', 'COMPLETED'],
-      default: 'PENDING',
+      enum: ['accepted', 'pending', 'declined', 'waiting', 'active', 'completed'],
+      default: 'pending',
     },
     customerRated: {
       type: Boolean,

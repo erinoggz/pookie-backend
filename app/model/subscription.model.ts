@@ -32,8 +32,8 @@ const SubscriptionSchema = new Schema<ISubscriptionModel>(
     },
     status: {
       type: String,
-      enum: ['ACTIVE', 'INACTIVE', 'COMPLETE', 'CANCLED'],
-      default: 'INACTIVE',
+      enum: ['active', 'inactive', 'complete', 'cancled'],
+      default: 'inactive',
     },
   },
   {
