@@ -41,6 +41,7 @@ export class UserService {
           delete query[key];
         }
       }
+    }
     if (query['lang']) {
       query['language'] = { $in: [query['lang']] };
       delete query['lang'];
