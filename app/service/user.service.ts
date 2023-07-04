@@ -34,7 +34,6 @@ export class UserService {
     if (min || max) {
       query['rate'] = { $gte: min, $lte: max };
     }
-
     for (const key in query) {
       if (Object.prototype.hasOwnProperty.call(query, key)) {
         const filter = query[key];
@@ -42,6 +41,9 @@ export class UserService {
           delete query[key];
         }
       }
+    if (query['lang']) {
+      query['language'] = { $in: [query['lang']] };
+      delete query['lang'];
     }
     query['userType'] = { $eq: UserType.sitter };
     if (srch) {
