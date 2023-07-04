@@ -31,7 +31,7 @@ export interface IUser extends Document {
   pets: string;
   rate: string;
   device_token: string;
-  language: string;
+  language: Array<string>;
   firstAid: boolean;
   childcareCertification: string;
   cpr: string;
