@@ -98,7 +98,7 @@ const UserSchema = new Schema<IUserModel>(
       default: false,
     },
     rate: String,
-    language: String,
+    language: [String],
     firstAid: {
       type: Boolean,
       default: false,
@@ -194,7 +194,6 @@ UserSchema.index({
   childcareCertified: 1,
   specialNeeds: 1,
   rate: 1,
-  language: 1,
   ownTransport: 1,
   firstAid: 1,
   job: 1,
