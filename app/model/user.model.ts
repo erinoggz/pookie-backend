@@ -98,6 +98,7 @@ const UserSchema = new Schema<IUserModel>(
       default: false,
     },
     rate: String,
+    lessons: [String],
     language: [String],
     firstAid: {
       type: Boolean,
