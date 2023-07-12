@@ -43,7 +43,7 @@ export class UserService {
       }
     }
     if (query['lang']) {
-      query['language'] = { $in: [query['lang']] };
+      query['language'] = { $in: JSON.parse(query['lang']) };
       delete query['lang'];
     }
     query['userType'] = { $eq: UserType.sitter };
