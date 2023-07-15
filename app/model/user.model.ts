@@ -46,15 +46,15 @@ const UserSchema = new Schema<IUserModel>(
     },
     userType: {
       type: String,
-      enum: Object.values(['parent', 'sitter', 'grind']).concat([null]),
+      enum: Object.values(['parent', 'sitter', 'tutor']).concat([null]),
     },
     job: {
       type: String,
-      enum: Object.values(['sitter', 'au_pair', 'nanny', 'grind']).concat([null]),
+      enum: Object.values(['sitter', 'au_pair', 'nanny', 'tutor']).concat([null]),
     },
     lookingFor: {
       type: String,
-      enum: Object.values(['sitter', 'au_pair', 'nanny', 'grind']).concat([null]),
+      enum: Object.values(['sitter', 'au_pair', 'nanny', 'tutor']).concat([null]),
     },
     meansOfVerification: {
       type: String,

@@ -29,6 +29,7 @@ export class UserService {
   }
   public getSitters = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
     const { min, max, srch } = req.query;
+    const body = req.body;
     const query: any = req.query;
     // Set rate
     if (min || max) {
@@ -42,9 +43,9 @@ export class UserService {
         }
       }
     }
-    if (query['lang']) {
-      query['language'] = { $in: JSON.parse(query['lang']) };
-      delete query['lang'];
+
+    if (body['lang']) {
+      query['language'] = { $in: body['lang'] };
     }
     query['userType'] = { $eq: UserType.sitter };
     if (srch) {
