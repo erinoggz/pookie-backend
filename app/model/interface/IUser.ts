@@ -8,7 +8,7 @@ export interface IUser extends Document {
   current_subscription: Types.ObjectId;
   gender: 'male' | 'female' | 'not_specified';
   profilePicture: string;
-  userType: 'parent' | 'sitter' | 'grind';
+  userType: 'parent' | 'sitter' | 'tutor';
   firstName: string;
   referredBy: string;
   lastName: string;
@@ -38,8 +38,8 @@ export interface IUser extends Document {
   cpr: string;
   ownTransport: boolean;
   availability: 'available' | 'busy' | 'not_available';
-  job: 'sitter' | 'au_pair' | 'nanny' | 'grind';
-  lookingFor: 'sitter' | 'au_pair' | 'nanny' | 'grind';
+  job: 'sitter' | 'au_pair' | 'nanny' | 'tutor';
+  lookingFor: 'sitter' | 'au_pair' | 'nanny' | 'tutor';
   meansOfVerification:
     | 'international_passport'
     | 'drivers_license'

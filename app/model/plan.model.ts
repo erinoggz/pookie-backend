@@ -49,7 +49,7 @@ const PlanSchema = new Schema<IPlanModel>(
     },
     userType: {
       type: String,
-      enum: Object.values(['parent', 'sitter', 'grind']).concat([null]),
+      enum: Object.values(['parent', 'sitter', 'tutor']).concat([null]),
     },
     interval: {
       type: String,

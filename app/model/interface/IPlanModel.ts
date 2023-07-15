@@ -14,7 +14,7 @@ export interface IPlanModel extends Document {
   emergency_sitter_support: boolean;
   monthly_rewards: boolean;
   booking_fee: boolean;
-  userType: 'parent' | 'sitter' | 'grind';
+  userType: 'parent' | 'sitter' | 'tutor';
   amount: number;
   plan_code: string;
   send_invoices: boolean;
