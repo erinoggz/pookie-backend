@@ -47,7 +47,10 @@ export class UserService {
     if (body['lang']) {
       query['language'] = { $in: body['lang'] };
     }
-    query['userType'] = { $eq: UserType.sitter };
+    if (body['lessons']) {
+      query['lessons'] = { $in: body['lessons'] };
+    }
+    query['userType'] = { $ne: UserType.parent };
     if (srch) {
       const searchQuery = {
         $or: [
