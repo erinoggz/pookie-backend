@@ -2,23 +2,35 @@ import { Document, Types } from 'mongoose';
 
 export interface IPlanModel extends Document {
   _id: Types.ObjectId;
+
   name: string;
-  label: string;
-  interval: 'hourly' | 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'annually';
-  plan_type: 'free' | 'standard' | 'premium';
-  unlimited_messages: boolean;
-  video_call: boolean;
-  access_to_verified_sitters: boolean;
-  check_references: boolean;
-  day_live_chat: boolean;
-  emergency_sitter_support: boolean;
-  monthly_rewards: boolean;
+  search: boolean;
+  message_limit: boolean;
+  message_limit_count: number;
+  profile_creation_charge: boolean;
+  platform_fees: boolean;
+  book_sitter_job: boolean;
   booking_fee: boolean;
-  userType: 'parent' | 'sitter' | 'tutor';
+  platform_fees_amount: number;
+  plan_type: 'free' | 'standard' | 'premium';
+  cancellation_charge: boolean;
+  cancellation_hour: number;
+  cancellation_percentage: number;
+  view_references: boolean;
+  booking_fee_charge: number;
+  label: string;
+  interval:
+    | 'hourly'
+    | 'daily'
+    | 'weekly'
+    | 'monthly'
+    | 'quarterly'
+    | 'annually'
+    | 'none';
   amount: number;
+  priority_bookings: boolean;
   plan_code: string;
-  send_invoices: boolean;
-  paystack_id: string;
   currency: string;
+  userType: 'parent' | 'sitter' | 'tutor';
   status: boolean;
 }
