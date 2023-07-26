@@ -73,4 +73,15 @@ export default class Helpers {
   ): string | jwt.JwtPayload | object {
     return jwt.verify(token, secret);
   };
+
+  /**
+   * Generates reference number for create or debit on wallet.
+   * @param  {string} s.
+   * @return {string} Generated REF.
+   */
+  static generateRef = (s) => {
+    const p = Math.floor(1000 + Math.random() * 9000);
+
+    return `${s}|${moment().format('YYYYMMDD')}|${p}`;
+  };
 }

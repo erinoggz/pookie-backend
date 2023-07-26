@@ -19,10 +19,14 @@ import Subscription from '../model/subscription.model';
 import User, { IUserModel } from '../model/user.model';
 import plans from '../seeds/data/plan/plan';
 import { EmailService } from './email.service';
+import { WalletService } from './wallet.service';
 
 @injectable()
 export class AuthService {
-  constructor(private emailService: EmailService) {}
+  constructor(
+    private emailService: EmailService,
+    private walletService: WalletService
+  ) {}
 
   public registerUser = async (
     req: IRequest
@@ -103,6 +107,7 @@ export class AuthService {
 
     if (userType === UserType.sitter) {
       plan_code = plans[1].plan_code;
+      await this.walletService.createWallet(user.id);
     }
     const plan = await Plan.findOne({ plan_code });
     const current_subscription = await Subscription.create({
