@@ -107,8 +107,8 @@ export class AuthService {
 
     if (userType === UserType.sitter) {
       plan_code = plans[1].plan_code;
-      await this.walletService.createWallet(user.id);
     }
+    await this.walletService.createWallet(user.id);
     const plan = await Plan.findOne({ plan_code });
     const current_subscription = await Subscription.create({
       name: plan.name,
