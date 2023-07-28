@@ -24,6 +24,9 @@ const UserSchema = new Schema<IUserModel>(
       unique: true,
       required: true,
     },
+    wallet: {
+      type: String,
+    },
     password: {
       type: String,
       required: true,

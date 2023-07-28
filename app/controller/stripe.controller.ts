@@ -26,6 +26,27 @@ class StripeController {
       );
     }
   };
+
+  /**
+   * @route Post api/v1/payment/verify.
+   * @desc get payment intent
+   * @access Public.
+   */
+  // verifyPayment = async (req: IRequest, res: IResponse) => {
+  //   try {
+  //     const result = await this.stripeService.verifyPayment(req);
+  //     return res.ok(
+  //       result?.data,
+  //       result?.message || 'Payment verified successfully!'
+  //     );
+  //   } catch (error) {
+  //     return res.serverError(
+  //       error,
+  //       error?.message || 'An error occured while trying to verify payment',
+  //       404
+  //     );
+  //   }
+  // };
 }
 
 export default StripeController;

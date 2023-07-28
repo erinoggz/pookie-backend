@@ -10,6 +10,7 @@ export interface IUser extends Document {
   profilePicture: string;
   userType: 'parent' | 'sitter' | 'tutor';
   firstName: string;
+  wallet: string;
   referredBy: string;
   lastName: string;
   address: string;
