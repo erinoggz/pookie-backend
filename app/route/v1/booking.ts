@@ -3,7 +3,8 @@ import { container } from 'tsyringe';
 import BookingController from '../../controller/booking.controller';
 import authMiddleware from '../../middleware/auth.middleware';
 import parentMiddleware from '../../middleware/parent.middleware';
-import sitterMiddleware from '../../middleware/sitter.middleware';
+// import sitterMiddleware from '../../middleware/sitter.middleware';
+import sitterTutorMiddleware from '../../middleware/sitter-and-tutor.middleware';
 import BookingValidator from '../../validator/booking.validator';
 
 const BookingRouter: Router = express.Router();
@@ -20,7 +21,7 @@ BookingRouter.post(
   .put(
     '/sitter',
     authMiddleware,
-    sitterMiddleware,
+    sitterTutorMiddleware,
     bookingController.merchantUpdateBooking
   )
   .put(
@@ -32,13 +33,13 @@ BookingRouter.post(
   .get(
     '/sitter',
     authMiddleware,
-    sitterMiddleware,
+    sitterTutorMiddleware,
     bookingController.merchantGetAllBookings
   )
   .get(
     '/sitter/:bookingId',
     authMiddleware,
-    sitterMiddleware,
+    sitterTutorMiddleware,
     bookingController.merchantGetBooking
   )
   .get(
