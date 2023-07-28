@@ -28,6 +28,24 @@ class WalletController {
   };
 
   /**
+   * @route POST api/v1/wallet/fund
+   * @desc post fund wallet endpoint
+   * @access Public.
+   */
+  fundWallet = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.walletService.fundWallet(req);
+      return res.ok(result?.data, result?.message || 'Wallet funded successfully!');
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to fund wallet',
+        error?.code
+      );
+    }
+  };
+
+  /**
    * @route GET api/v1/wallet/history
    * @desc get wallet history endpoint
    * @access Public.

@@ -2,17 +2,19 @@ import { injectable } from 'tsyringe';
 import Helpers from '../lib/helpers';
 import { IRequest } from '../common/Interface/IResponse';
 import Wallet from '../model/wallet';
+import Transaction from '../model/transaction-history.model';
 import StatusCodes from '../lib/response/status-codes';
 import mongoose, { Types } from 'mongoose';
 import WalletHistory from '../model/wallet-history.model';
 import { IWalletHistory } from '../model/interface/IWallet';
 import PaginationService from './pagination.service';
+import { StripeService } from './stripe.service';
 
 @injectable()
 export class WalletService {
   pagination: PaginationService<IWalletHistory>;
 
-  constructor() {
+  constructor(private stripeService: StripeService) {
     this.pagination = new PaginationService(WalletHistory);
   }
   public verifyExistingWallet = async (walletId: number) => {
@@ -33,7 +35,7 @@ export class WalletService {
     return rand;
   };
 
-  public createWallet = async (user: string) => {
+  public createWallet = async (user: string): Promise<any> => {
     try {
       const walletId = await this.generateWalletId();
       // check if user has existing wallet
@@ -51,13 +53,83 @@ export class WalletService {
         user: new Types.ObjectId(user),
       });
       await wallet.save();
-      return Helpers.success(null);
+      return wallet;
     } catch (error) {
       return Helpers.CustomException(
         StatusCodes.UNPROCESSABLE_ENTITY,
         error?.message || 'An unknown error occurred while trying to create wallet'
       );
     }
+  };
+
+  public fundWallet = async (req: IRequest) => {
+    const { walletId, transactionId } = req.body;
+
+    if (!walletId && !transactionId) {
+      return Helpers.CustomException(
+        StatusCodes.BAD_REQUEST,
+        'walletId and transactionId are required'
+      );
+    }
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const wallet = await Wallet.findOne({ walletId });
+      const referenceNo = Helpers.generateRef('FUND');
+
+      const verifyPayment = await this.stripeService.verifyPayment(transactionId);
+
+      // update transaction history
+      await Transaction.findOneAndUpdate(
+        { transactionId },
+        { transactionId },
+        { upsert: true, new: true }
+      );
+
+      if (verifyPayment.status !== 'succeeded') {
+        return Helpers.CustomException(
+          StatusCodes.UNPROCESSABLE_ENTITY,
+          'An unknown error occurred while trying to fund wallet'
+        );
+      }
+
+      const amount = Number(verifyPayment.amount) / 100;
+      // get current wallet balance and add amount to credit
+      const previousBalance = wallet.balance;
+      const newBalance = previousBalance + amount;
+
+      const history = await WalletHistory.create(
+        [
+          {
+            walletId: wallet.walletId,
+            referenceNo,
+            amount,
+            description: 'Wallet funded through stripe',
+            type: 'credit',
+            newBalance,
+          },
+        ],
+        { session }
+      );
+
+      // update wallet balance
+      await Wallet.findByIdAndUpdate(
+        wallet.id,
+        { balance: newBalance },
+        { session }
+      );
+
+      await session.commitTransaction();
+
+      return Helpers.success(history[0]);
+    } catch (error) {
+      await session.abortTransaction();
+      Helpers.CustomException(
+        StatusCodes.UNPROCESSABLE_ENTITY,
+        error?.message || 'An unknown error occurred while trying to credit wallet'
+      );
+    }
+    session.endSession();
   };
 
   public creditWallet = async (req: IRequest) => {
@@ -67,7 +139,7 @@ export class WalletService {
     session.startTransaction();
     try {
       const wallet = await Wallet.findOne({ walletId });
-      const referenceNo = Helpers.generateRef('FUND');
+      const referenceNo = Helpers.generateRef('CREDIT');
 
       // get current wallet balance and add amount to credit
       const previousBalance = wallet.balance;

@@ -36,13 +36,17 @@ export class StripeService {
     return Helpers.success(session);
   };
 
-  public verifyPayment = async (
-    req: IRequest
-  ): Promise<ISuccess | ErrnoException> => {
-    const { sessionId } = req.query;
-    const checkout = await stripe.checkout.sessions.retrieve(String(sessionId), {
-      expand: ['payment_intent'],
-    });
-    return Helpers.success(null);
+  // public verifyPayment = async (
+  //   req: IRequest
+  // ): Promise<ISuccess | ErrnoException> => {
+  //   const { sessionId } = req.query;
+  //   const checkout = await stripe.paymentIntents.retrieve(String(sessionId));
+  //   return Helpers.success(checkout);
+  // };
+
+  public verifyPayment = async (transactionId: string): Promise<any> => {
+    const checkout = await stripe.paymentIntents.retrieve(String(transactionId));
+    return checkout;
+    // return Helpers.success(checkout);
   };
 }
