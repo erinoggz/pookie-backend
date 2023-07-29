@@ -104,6 +104,7 @@ export class WalletService {
             walletId: wallet.walletId,
             referenceNo,
             amount,
+            booking: null,
             description: 'Wallet funded through stripe',
             type: 'credit',
             newBalance,
