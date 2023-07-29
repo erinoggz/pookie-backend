@@ -180,6 +180,13 @@ export class WalletService {
     session.endSession();
   };
 
+  public checkWallet = async (walletId: string): Promise<number> => {
+    const wallet = await Wallet.findOne({
+      walletId,
+    });
+    return wallet.balance;
+  };
+
   public walletBalance = async (req: IRequest) => {
     const wallet = await Wallet.findOne({
       user: new Types.ObjectId(req.user.id),
@@ -191,7 +198,7 @@ export class WalletService {
     const wallet = await Wallet.findOne({
       user: new Types.ObjectId(req.user.id),
     });
-    const query = { walletId: new Types.ObjectId(wallet._id) };
+    const query = { walletId: wallet?.walletId };
     query['sort'] = { updatedAt: 'desc' };
     const response = await this.pagination.paginate(query, [
       'walletId',
