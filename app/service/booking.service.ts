@@ -13,6 +13,7 @@ import moment from 'moment';
 import { NotificationService } from './notification.service';
 import { WalletService } from './wallet.service';
 import TransactionHistory from '../model/transaction-history.model';
+import Wallet from '../model/wallet';
 
 @injectable()
 export class BookingService {
@@ -202,7 +203,7 @@ export class BookingService {
   public parentUpdateBooking = async (
     req: IRequest
   ): Promise<ISuccess | ErrnoException> => {
-    const { bookingId, status } = req.body;
+    const { bookingId, status, cancelFee, transactionId, walletId } = req.body;
 
     const booking: any = await Booking.findOne({
       _id: new Types.ObjectId(bookingId),
@@ -210,6 +211,47 @@ export class BookingService {
     }).populate(['user', 'merchant']);
 
     if (status === StatusType.declined) {
+      const wallet = await Wallet.findOne({
+        user: new Types.ObjectId(booking.merchant),
+      });
+
+      if (!wallet) {
+        return Helpers.CustomException(
+          StatusCodes.NOT_FOUND,
+          'Sitter wallet not found'
+        );
+      }
+
+      if (walletId) {
+        await this.walletService.debitWallet(
+          walletId,
+          cancelFee,
+          booking._id,
+          'Booking fee debit'
+        );
+        await this.walletService.creditWallet(
+          wallet.walletId,
+          cancelFee,
+          booking._id,
+          'Booking fee credit'
+        );
+      }
+
+      if (transactionId) {
+        // update transaction history
+        await TransactionHistory.findOneAndUpdate(
+          { transactionId },
+          { transactionId, booking: booking._id },
+          { upsert: true, new: true }
+        );
+        await this.walletService.creditWallet(
+          wallet.walletId,
+          cancelFee,
+          booking._id,
+          'Booking fee credit'
+        );
+      }
+
       await Booking.findOneAndUpdate(
         {
           _id: new Types.ObjectId(bookingId),
