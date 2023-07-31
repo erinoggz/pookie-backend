@@ -448,7 +448,7 @@ export class BookingService {
     if (!walletId && !transactionId) {
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
-        'walletId and transactionId are required'
+        'walletId or transactionId are required'
       );
     }
 
@@ -495,7 +495,7 @@ export class BookingService {
       wallet.walletId,
       amount,
       booking._id,
-      'Booking fee credit'
+      'Booking payment credit'
     );
 
     await Booking.findByIdAndUpdate(
