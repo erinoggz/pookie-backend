@@ -236,12 +236,6 @@ export class BookingService {
           booking._id,
           'Booking cancellation fee'
         );
-        await this.walletService.creditWallet(
-          wallet.walletId,
-          cancelFee,
-          booking._id,
-          'Booking fee credit'
-        );
       }
 
       if (transactionId) {
@@ -251,13 +245,14 @@ export class BookingService {
           { transactionId, booking: booking._id },
           { upsert: true, new: true }
         );
-        await this.walletService.creditWallet(
-          wallet.walletId,
-          cancelFee,
-          booking._id,
-          'Booking fee credit'
-        );
       }
+
+      await this.walletService.creditWallet(
+        wallet.walletId,
+        cancelFee,
+        booking._id,
+        'Booking fee credit'
+      );
 
       await Booking.findOneAndUpdate(
         {
