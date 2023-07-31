@@ -11,6 +11,7 @@ import { IBookingModel } from '../model/interface/IBookingModel';
 import PaginationService from './pagination.service';
 import moment from 'moment';
 import { NotificationService } from './notification.service';
+import { WalletService } from './wallet.service';
 
 @injectable()
 export class BookingService {
@@ -28,14 +29,26 @@ export class BookingService {
     },
   ];
 
-  constructor(private notificationService: NotificationService) {
+  constructor(
+    private notificationService: NotificationService,
+    private walletService: WalletService
+  ) {
     this.pagination = new PaginationService(Booking);
   }
 
   public createBooking = async (
     req: IRequest
   ): Promise<ISuccess | ErrnoException> => {
-    const { merchantId, userId, startDate, endDate, address } = req.body;
+    const {
+      merchantId,
+      userId,
+      startDate,
+      endDate,
+      address,
+      walletId,
+      transactionId,
+      bookingFee,
+    } = req.body;
 
     const merchant = await User.findById(merchantId);
     if (!merchant)
@@ -49,21 +62,19 @@ export class BookingService {
         `Sitter is currently not available!`
       );
 
-    await Booking.findOneAndUpdate(
-      {
-        user: new Types.ObjectId(userId),
-        merchant: new Types.ObjectId(merchantId),
-        bookingStatus: StatusType.pending,
-      },
-      {
-        user: new Types.ObjectId(userId),
-        merchant: new Types.ObjectId(merchantId),
-        startDate,
-        endDate,
-        address,
-      },
-      { upsert: true, new: true }
-    );
+    const booking: IBookingModel = new Booking({
+      user: new Types.ObjectId(userId),
+      merchant: new Types.ObjectId(merchantId),
+      startDate,
+      endDate,
+      address,
+    });
+
+    if (walletId) {
+      await this.walletService.debitWallet(walletId, bookingFee, booking._id);
+    }
+
+    await booking.save();
 
     await this.notificationService.sendNotification(
       merchant.device_token,
