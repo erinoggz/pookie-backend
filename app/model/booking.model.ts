@@ -50,6 +50,10 @@ const BookingSchema = new Schema<IBookingModel>(
       type: Boolean,
       default: false,
     },
+    paid: {
+      type: Boolean,
+      default: false,
+    },
     totalAmount: {
       type: Number,
       default: 0,
