@@ -14,6 +14,7 @@ import { NotificationService } from './notification.service';
 import { WalletService } from './wallet.service';
 import TransactionHistory from '../model/transaction-history.model';
 import Wallet from '../model/wallet';
+import { StripeService } from './stripe.service';
 
 @injectable()
 export class BookingService {
@@ -33,7 +34,8 @@ export class BookingService {
 
   constructor(
     private notificationService: NotificationService,
-    private walletService: WalletService
+    private walletService: WalletService,
+    private stripeService: StripeService
   ) {
     this.pagination = new PaginationService(Booking);
   }
@@ -73,7 +75,12 @@ export class BookingService {
     });
 
     if (walletId) {
-      await this.walletService.debitWallet(walletId, bookingFee, booking._id);
+      await this.walletService.debitWallet(
+        walletId,
+        bookingFee,
+        booking._id,
+        'Booking fee'
+      );
     }
 
     if (transactionId) {
@@ -227,7 +234,7 @@ export class BookingService {
           walletId,
           cancelFee,
           booking._id,
-          'Booking fee debit'
+          'Booking cancellation fee'
         );
         await this.walletService.creditWallet(
           wallet.walletId,
@@ -431,5 +438,73 @@ export class BookingService {
     if (result.meta.page < result.meta.pages) {
       await this.validateCompletedBooking(page + 1);
     }
+  };
+
+  public completeBookingPayment = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { walletId, transactionId, bookingId, amount } = req.body;
+
+    if (!walletId && !transactionId) {
+      return Helpers.CustomException(
+        StatusCodes.BAD_REQUEST,
+        'walletId and transactionId are required'
+      );
+    }
+
+    const booking = await Booking.findById(new Types.ObjectId(bookingId));
+
+    const wallet = await Wallet.findOne({
+      user: new Types.ObjectId(booking.merchant),
+    });
+
+    if (!wallet) {
+      return Helpers.CustomException(
+        StatusCodes.NOT_FOUND,
+        'Sitter wallet not found'
+      );
+    }
+
+    if (transactionId) {
+      const verifyPayment = await this.stripeService.verifyPayment(transactionId);
+
+      // update transaction history
+      await TransactionHistory.findOneAndUpdate(
+        { transactionId },
+        { transactionId, booking: booking._id },
+        { upsert: true, new: true }
+      );
+      if (verifyPayment.status !== 'succeeded') {
+        return Helpers.CustomException(
+          StatusCodes.UNPROCESSABLE_ENTITY,
+          'Unable to fund wallet. Payment not successful.'
+        );
+      }
+    }
+
+    if (walletId) {
+      await this.walletService.debitWallet(
+        walletId,
+        amount,
+        booking._id,
+        'Booking payment fee'
+      );
+    }
+
+    await this.walletService.creditWallet(
+      wallet.walletId,
+      amount,
+      booking._id,
+      'Booking fee credit'
+    );
+
+    await Booking.findByIdAndUpdate(
+      booking._id,
+      {
+        paid: true,
+      },
+      { upsert: true, new: true }
+    );
+    return Helpers.success(null);
   };
 }

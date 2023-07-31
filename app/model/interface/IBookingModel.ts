@@ -11,6 +11,7 @@ export interface IBookingModel extends Document {
   customerRequest: 'accepted' | 'declined' | 'completed' | 'active';
   merchantRequest: 'accepted' | 'pending' | 'declined' | 'completed' | 'active';
   totalHours: number;
+  paid: boolean;
   address: string;
   bookingStatus:
     | 'accepted'

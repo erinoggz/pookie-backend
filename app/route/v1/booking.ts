@@ -18,6 +18,12 @@ BookingRouter.post(
   bookingValidator.createBooking,
   bookingController.createBooking
 )
+  .post(
+    '/payment',
+    authMiddleware,
+    parentMiddleware,
+    bookingController.completeBookingPayment
+  )
   .put(
     '/sitter',
     authMiddleware,
