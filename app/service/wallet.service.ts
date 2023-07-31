@@ -82,7 +82,7 @@ export class WalletService {
       // update transaction history
       await Transaction.findOneAndUpdate(
         { transactionId },
-        { transactionId },
+        { transactionId, booking: null },
         { upsert: true, new: true }
       );
 

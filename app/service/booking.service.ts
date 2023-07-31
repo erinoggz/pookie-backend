@@ -12,6 +12,7 @@ import PaginationService from './pagination.service';
 import moment from 'moment';
 import { NotificationService } from './notification.service';
 import { WalletService } from './wallet.service';
+import TransactionHistory from '../model/transaction-history.model';
 
 @injectable()
 export class BookingService {
@@ -72,6 +73,15 @@ export class BookingService {
 
     if (walletId) {
       await this.walletService.debitWallet(walletId, bookingFee, booking._id);
+    }
+
+    if (transactionId) {
+      // update transaction history
+      await TransactionHistory.findOneAndUpdate(
+        { transactionId },
+        { transactionId, booking: booking._id },
+        { upsert: true, new: true }
+      );
     }
 
     await booking.save();
