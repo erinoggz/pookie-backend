@@ -495,7 +495,7 @@ export class BookingService {
       wallet.walletId,
       amount,
       booking._id,
-      'Booking fee credit'
+      'Booking payment credit'
     );
 
     await Booking.findByIdAndUpdate(
