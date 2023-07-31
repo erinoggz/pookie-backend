@@ -73,7 +73,12 @@ export class BookingService {
     });
 
     if (walletId) {
-      await this.walletService.debitWallet(walletId, bookingFee, booking._id);
+      await this.walletService.debitWallet(
+        walletId,
+        bookingFee,
+        booking._id,
+        'Booking fee'
+      );
     }
 
     if (transactionId) {
@@ -227,7 +232,7 @@ export class BookingService {
           walletId,
           cancelFee,
           booking._id,
-          'Booking fee debit'
+          'Booking cancellation fee'
         );
         await this.walletService.creditWallet(
           wallet.walletId,
