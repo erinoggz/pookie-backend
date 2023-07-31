@@ -11,6 +11,7 @@ export interface IUser extends Document {
   userType: 'parent' | 'sitter' | 'tutor';
   firstName: string;
   wallet: string;
+  version: string;
   referredBy: string;
   lastName: string;
   address: string;

@@ -50,6 +50,7 @@ export class AuthService {
       language,
       lessons,
       smoker,
+      version,
       rate,
       ownCar,
       experience,
@@ -85,6 +86,7 @@ export class AuthService {
       rate,
       ownCar,
       experience,
+      version,
     });
 
     const input = Helpers.otpGenerator(email, userType);

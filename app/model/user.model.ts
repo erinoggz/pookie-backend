@@ -117,6 +117,7 @@ const UserSchema = new Schema<IUserModel>(
       type: Boolean,
       default: false,
     },
+    version: String,
     googleId: String,
     facebookId: String,
     lastLogin: Date,

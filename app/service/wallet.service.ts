@@ -82,7 +82,7 @@ export class WalletService {
       // update transaction history
       await Transaction.findOneAndUpdate(
         { transactionId },
-        { transactionId },
+        { transactionId, booking: null },
         { upsert: true, new: true }
       );
 
@@ -105,7 +105,7 @@ export class WalletService {
             referenceNo,
             amount,
             booking: null,
-            description: 'Wallet funded through stripe',
+            description: 'Wallet funding',
             type: 'credit',
             newBalance,
           },
@@ -140,6 +140,9 @@ export class WalletService {
     session.startTransaction();
     try {
       const wallet = await Wallet.findOne({ walletId });
+      if (!wallet) {
+        return Helpers.CustomException(StatusCodes.NOT_FOUND, 'Wallet not found');
+      }
       const referenceNo = Helpers.generateRef('CREDIT');
 
       // get current wallet balance and add amount to credit
@@ -207,5 +210,64 @@ export class WalletService {
       'referenceNo',
     ]);
     return Helpers.success(response);
+  };
+
+  public debitWallet = async (walletId: string, amount: number, booking: any) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const wallet = await Wallet.findOne({ walletId });
+      if (!wallet) {
+        return Helpers.CustomException(StatusCodes.NOT_FOUND, 'Wallet not found');
+      }
+      if (!amount) {
+        return Helpers.CustomException(
+          StatusCodes.BAD_REQUEST,
+          'Debit amount is required!'
+        );
+      }
+      // check if amount to be debited is available in user wallet
+      if (Number(amount) > wallet.balance)
+        return Helpers.CustomException(
+          StatusCodes.BAD_REQUEST,
+          `Wallet balance is less than ${amount}`
+        );
+
+      const referenceNo = Helpers.generateRef('DEBIT');
+      // get current wallet balance and add amount to debit
+      const previousBalance = wallet.balance;
+      const newBalance = previousBalance - Number(amount);
+
+      await WalletHistory.create(
+        [
+          {
+            walletId,
+            referenceNo,
+            amount,
+            description: 'Wallet debit',
+            booking,
+            type: 'debit',
+            newBalance,
+          },
+        ],
+        { session }
+      );
+
+      // update wallet balance
+      await Wallet.findByIdAndUpdate(
+        wallet.id,
+        { balance: newBalance },
+        { session }
+      );
+
+      await session.commitTransaction();
+
+      return true;
+    } catch (error) {
+      await session.abortTransaction();
+      await session.endSession();
+      throw new Error(error?.message);
+    }
   };
 }
