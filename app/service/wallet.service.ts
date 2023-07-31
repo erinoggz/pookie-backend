@@ -75,6 +75,9 @@ export class WalletService {
     session.startTransaction();
     try {
       const wallet = await Wallet.findOne({ walletId });
+      if (!wallet) {
+        return Helpers.CustomException(StatusCodes.NOT_FOUND, 'Wallet not found');
+      }
       const referenceNo = Helpers.generateRef('FUND');
 
       const verifyPayment = await this.stripeService.verifyPayment(transactionId);
@@ -133,9 +136,12 @@ export class WalletService {
     session.endSession();
   };
 
-  public creditWallet = async (req: IRequest) => {
-    const { walletId, amount, description, booking } = req.body;
-
+  public creditWallet = async (
+    walletId: string,
+    amount: string,
+    booking: any,
+    description?: string
+  ) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
@@ -149,13 +155,13 @@ export class WalletService {
       const previousBalance = wallet.balance;
       const newBalance = previousBalance + parseFloat(amount);
 
-      const history = await WalletHistory.create(
+      await WalletHistory.create(
         [
           {
             walletId: wallet.walletId,
             referenceNo,
             amount,
-            description,
+            description: description || 'Wallet credit',
             booking,
             type: 'credit',
             newBalance,
@@ -173,7 +179,7 @@ export class WalletService {
 
       await session.commitTransaction();
 
-      return Helpers.success(history[0]);
+      return true;
     } catch (error) {
       await session.abortTransaction();
       Helpers.CustomException(
@@ -212,7 +218,12 @@ export class WalletService {
     return Helpers.success(response);
   };
 
-  public debitWallet = async (walletId: string, amount: number, booking: any) => {
+  public debitWallet = async (
+    walletId: string,
+    amount: number,
+    booking: any,
+    description?: string
+  ) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -245,7 +256,7 @@ export class WalletService {
             walletId,
             referenceNo,
             amount,
-            description: 'Wallet debit',
+            description: description || 'Wallet debit',
             booking,
             type: 'debit',
             newBalance,
@@ -262,7 +273,6 @@ export class WalletService {
       );
 
       await session.commitTransaction();
-
       return true;
     } catch (error) {
       await session.abortTransaction();
