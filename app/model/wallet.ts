@@ -4,7 +4,10 @@ import { IWallet } from './interface/IWallet';
 // Create the wallet schema
 const WalletSchema = new Schema<IWallet>(
   {
-    user: Object,
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'Users',
+    },
     walletId: {
       type: String,
       unique: true,
