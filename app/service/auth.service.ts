@@ -118,6 +118,8 @@ export class AuthService {
       user: user._id,
       plan: plan._id,
       amount: plan.amount,
+      start_date: new Date(),
+      expiry_date: new Date('5000-07-26T09:06:23.736+00:00'),
       currency: plan.currency,
       status: StatusType.active,
     });

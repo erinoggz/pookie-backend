@@ -55,6 +55,7 @@ export class BookingService {
     } = req.body;
 
     const merchant = await User.findById(merchantId);
+    const user = await User.findById(userId);
     if (!merchant)
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
@@ -80,6 +81,11 @@ export class BookingService {
         bookingFee,
         booking._id,
         'Booking fee'
+      );
+      await this.notificationService.sendNotification(
+        user.device_token,
+        'Booking fee',
+        `Debit of £${bookingFee} has been deducted from your wallet`
       );
     }
 
@@ -216,7 +222,6 @@ export class BookingService {
       _id: new Types.ObjectId(bookingId),
       user: new Types.ObjectId(req.user.id),
     }).populate(['user', 'merchant']);
-
     if (status === StatusType.declined) {
       const wallet = await Wallet.findOne({
         user: new Types.ObjectId(booking.merchant),
@@ -230,17 +235,17 @@ export class BookingService {
       }
 
       if (walletId) {
+        const user = await User.findById(req.user.id);
         await this.walletService.debitWallet(
           walletId,
           cancelFee,
           booking._id,
           'Booking cancellation fee'
         );
-        await this.walletService.creditWallet(
-          wallet.walletId,
-          cancelFee,
-          booking._id,
-          'Booking fee credit'
+        await this.notificationService.sendNotification(
+          user.device_token,
+          'Cencellation fee',
+          `Debit of £${cancelFee} has been deducted from your wallet`
         );
       }
 
@@ -251,13 +256,19 @@ export class BookingService {
           { transactionId, booking: booking._id },
           { upsert: true, new: true }
         );
-        await this.walletService.creditWallet(
-          wallet.walletId,
-          cancelFee,
-          booking._id,
-          'Booking fee credit'
-        );
       }
+      const merchant = await User.findById(booking.merchant);
+      await this.walletService.creditWallet(
+        wallet.walletId,
+        cancelFee,
+        booking._id,
+        'Booking fee credit'
+      );
+      await this.notificationService.sendNotification(
+        merchant.device_token,
+        'Cencellation fee',
+        `Credit of £${cancelFee} has been added to your wallet`
+      );
 
       await Booking.findOneAndUpdate(
         {
@@ -448,7 +459,7 @@ export class BookingService {
     if (!walletId && !transactionId) {
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
-        'walletId or transactionId are required'
+        'walletId or transactionId is required'
       );
     }
 
@@ -483,11 +494,17 @@ export class BookingService {
     }
 
     if (walletId) {
+      const user = await User.findById(req.user.id);
       await this.walletService.debitWallet(
         walletId,
         amount,
         booking._id,
         'Booking payment fee'
+      );
+      await this.notificationService.sendNotification(
+        user.device_token,
+        'Payment fee',
+        `Debit of £${amount} has been deducted from your wallet`
       );
     }
 
@@ -496,6 +513,12 @@ export class BookingService {
       amount,
       booking._id,
       'Booking payment credit'
+    );
+    const merchant = await User.findById(booking.merchant);
+    await this.notificationService.sendNotification(
+      merchant.device_token,
+      'Payment fee',
+      `Credit of £${amount} has been added to your wallet`
     );
 
     await Booking.findByIdAndUpdate(
