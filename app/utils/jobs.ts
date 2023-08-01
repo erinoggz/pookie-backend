@@ -26,8 +26,8 @@ cron.schedule('*/20 * * * * *', () => {
   logger.log('Completed running job to validate completed bookings');
 });
 
-cron.schedule('*/30 * * * *', () => {
-  logger.log('Running job to update merchant ratings every 30 min');
+cron.schedule('*/10 * * * *', () => {
+  logger.log('Running job to update merchant ratings every 10 min');
   ratingsService.updateMerchantRatings(1);
   logger.log('Completed running job to update merchant ratings');
 });

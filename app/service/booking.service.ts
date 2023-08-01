@@ -443,7 +443,7 @@ export class BookingService {
     if (!walletId && !transactionId) {
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
-        'walletId or transactionId are required'
+        'walletId or transactionId is required'
       );
     }
 
