@@ -9,12 +9,17 @@ import WalletHistory from '../model/wallet-history.model';
 import { IWalletHistory } from '../model/interface/IWallet';
 import PaginationService from './pagination.service';
 import { StripeService } from './stripe.service';
+import { NotificationService } from './notification.service';
+import User from '../model/user.model';
 
 @injectable()
 export class WalletService {
   pagination: PaginationService<IWalletHistory>;
 
-  constructor(private stripeService: StripeService) {
+  constructor(
+    private stripeService: StripeService,
+    private notificationService: NotificationService
+  ) {
     this.pagination = new PaginationService(WalletHistory);
   }
   public verifyExistingWallet = async (walletId: number) => {
@@ -125,12 +130,18 @@ export class WalletService {
 
       await session.commitTransaction();
 
+      const user = await User.findOne({ _id: wallet.user });
+      await this.notificationService.sendNotification(
+        user.device_token,
+        'Wallet funded',
+        `Credit of £${amount} has been added to your wallet`
+      );
       return Helpers.success(history[0]);
     } catch (error) {
       await session.abortTransaction();
       Helpers.CustomException(
         StatusCodes.UNPROCESSABLE_ENTITY,
-        error?.message || 'An unknown error occurred while trying to credit wallet'
+        error?.message || 'An unknown error occurred while trying to fund wallet'
       );
     }
     session.endSession();
