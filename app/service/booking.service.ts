@@ -494,11 +494,17 @@ export class BookingService {
     }
 
     if (walletId) {
+      const user = await User.findById(req.user.id);
       await this.walletService.debitWallet(
         walletId,
         amount,
         booking._id,
         'Booking payment fee'
+      );
+      await this.notificationService.sendNotification(
+        user.device_token,
+        'Payment fee',
+        `Debit of £${amount} has been deducted from your wallet`
       );
     }
 
@@ -507,6 +513,12 @@ export class BookingService {
       amount,
       booking._id,
       'Booking payment credit'
+    );
+    const merchant = await User.findById(booking.merchant);
+    await this.notificationService.sendNotification(
+      merchant.device_token,
+      'Payment fee',
+      `Credit of £${amount} has been added to your wallet`
     );
 
     await Booking.findByIdAndUpdate(
