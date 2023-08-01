@@ -7,5 +7,6 @@ const PlanRouter: Router = express.Router();
 const planController: PlanController = container.resolve(PlanController);
 
 PlanRouter.get('/', authMiddleware, planController.getPlans);
+PlanRouter.put('/upgrade', authMiddleware, planController.upgradeSubscription);
 
 export default PlanRouter;

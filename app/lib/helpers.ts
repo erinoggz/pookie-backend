@@ -4,6 +4,10 @@ import moment from 'moment';
 import ResponseMessages from './response/response-messages';
 import * as jwt from 'jsonwebtoken';
 
+interface IDateRange {
+  start: Date;
+  end: Date;
+}
 /**
  * Class with methods to help your life... LOL
  */
@@ -84,4 +88,25 @@ export default class Helpers {
 
     return `${s}|${moment().format('YYYYMMDD')}|${p}`;
   };
+
+  static getDurationRange(end: number): IDateRange {
+    const startDate: moment.Moment = moment();
+    const endDate: moment.Moment = moment(moment().format('yy-MM-D')).add(
+      end,
+      'days'
+    );
+    return {
+      start: startDate.startOf('day').toDate(),
+      end: endDate.endOf('day').toDate(),
+    };
+  }
+
+  static dateDiffInDays(a: Date, b: Date) {
+    const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+    // Discard the time and time-zone information.
+    const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+    return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+  }
 }
