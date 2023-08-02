@@ -28,6 +28,24 @@ class StripeController {
   };
 
   /**
+   * @route Post api/v1/payment/payout.
+   * @desc post payout
+   * @access Public.
+   */
+  issuePayout = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.stripeService.createCardToken(req);
+      return res.ok(result?.data, result?.message || 'Payment issued successfully!');
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to issue payout',
+        error?.code
+      );
+    }
+  };
+
+  /**
    * @route Post api/v1/payment/verify.
    * @desc get payment intent
    * @access Public.
