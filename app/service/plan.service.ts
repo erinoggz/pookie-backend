@@ -142,6 +142,10 @@ export class PlanService {
         }
       );
     }
+
+    if (result.meta.page < result.meta.pages) {
+      await this.validateParentSubscriptions(page + 1);
+    }
   };
 
   public validateSitterSubscriptions = async (page = 1) => {
@@ -172,6 +176,10 @@ export class PlanService {
           },
         }
       );
+    }
+
+    if (result.meta.page < result.meta.pages) {
+      await this.validateSitterSubscriptions(page + 1);
     }
   };
 }

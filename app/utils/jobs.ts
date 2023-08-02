@@ -10,20 +10,20 @@ const bookingService: BookingService = container.resolve(BookingService);
 const ratingsService: RatingsService = container.resolve(RatingsService);
 const planService: PlanService = container.resolve(PlanService);
 
-cron.schedule('*/20 * * * * *', () => {
-  logger.log('Running job to validate active booking every 20 seconds');
+cron.schedule('*/10 * * * * *', () => {
+  logger.log('Running job to validate active booking every 10 seconds');
   bookingService.validateActiveBooking(1);
   logger.log('Completed running job to validate active bookings');
 });
 
-cron.schedule('*/20 * * * * *', () => {
-  logger.log('Running job to validate accepted booking every 20 seconds');
+cron.schedule('*/10 * * * * *', () => {
+  logger.log('Running job to validate accepted booking every 10 seconds');
   bookingService.validateAcceptedBooking(1);
   logger.log('Completed running job to validate accepted bookings');
 });
 
-cron.schedule('*/20 * * * * *', () => {
-  logger.log('Running job to validate completed booking every 20 seconds');
+cron.schedule('*/10 * * * * *', () => {
+  logger.log('Running job to validate completed booking every 10 seconds');
   bookingService.validateCompletedBooking(1);
   logger.log('Completed running job to validate completed bookings');
 });
