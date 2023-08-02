@@ -27,7 +27,11 @@ export class PlanService {
     this.pagination = new PaginationService(User);
   }
   public getPlans = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
-    const plans = await Plan.find({ userType: req.user.userType });
+    let userType = req.user.userType;
+    if (userType === UserType.tutor) {
+      userType = UserType.sitter;
+    }
+    const plans = await Plan.find({ userType });
     return Helpers.success(plans);
   };
 
