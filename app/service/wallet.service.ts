@@ -219,7 +219,7 @@ export class WalletService {
     const wallet = await Wallet.findOne({
       user: new Types.ObjectId(req.user.id),
     });
-    const query = { walletId: wallet?.walletId };
+    const query = { ...req.query, walletId: wallet?.walletId };
     query['sort'] = { updatedAt: 'desc' };
     const response = await this.pagination.paginate(query, [
       'walletId',
