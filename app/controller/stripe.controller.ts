@@ -34,7 +34,7 @@ class StripeController {
    */
   issuePayout = async (req: IRequest, res: IResponse) => {
     try {
-      const result = await this.stripeService.createCardToken(req);
+      const result = await this.stripeService.issuePayout(req);
       return res.ok(result?.data, result?.message || 'Payment issued successfully!');
     } catch (error) {
       return res.serverError(

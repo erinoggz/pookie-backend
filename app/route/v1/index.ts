@@ -6,6 +6,7 @@ import PlanRouter from './plan';
 import BookingRouter from './booking';
 import RatingsRouter from './rating';
 import WalletRouter from './wallet';
+import PaypalRouter from './paypal';
 
 const AppRouter: Router = express.Router();
 
@@ -16,5 +17,6 @@ AppRouter.use('/plan', PlanRouter);
 AppRouter.use('/booking', BookingRouter);
 AppRouter.use('/rating', RatingsRouter);
 AppRouter.use('/wallet', WalletRouter);
+AppRouter.use('/paypal', PaypalRouter);
 
 export default AppRouter;

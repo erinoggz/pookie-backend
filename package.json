@@ -37,9 +37,11 @@
     "node-cron": "^3.0.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
+    "paypal-rest-sdk": "^1.8.1",
     "reflect-metadata": "^0.1.13",
     "stripe": "^12.2.0",
     "tsyringe": "^4.6.0",
+    "uuid": "^9.0.0",
     "winston": "^3.6.0"
   },
   "devDependencies": {
@@ -51,6 +53,8 @@
     "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.14",
     "@types/passport": "^1.0.12",
+    "@types/paypal-rest-sdk": "^1.7.6",
+    "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.27.0",
     "eslint": "^7.7.0",
