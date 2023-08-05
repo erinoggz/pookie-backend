@@ -124,7 +124,7 @@ export class PlanService {
     const result = await this.pagination.paginate<IUserModel>(query, []);
 
     for (const item of result.data) {
-      await Subscription.updateMany(
+      await Subscription.updateOne(
         {
           expiry_date: { $lt: new Date() },
           user: new Types.ObjectId(item._id),

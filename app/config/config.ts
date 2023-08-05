@@ -35,6 +35,10 @@ const configuration = {
     stripe_secret_key: process.env.STRIPE_SECRET_KEY,
     stripe_publishable_key: process.env.STRIPE_PUBLISHABLE_KEY,
   },
+  paypal: {
+    client_secret: process.env.PAYPAL_SECRET_KEY,
+    client_id: process.env.PAYPAL_CLIENT_ID,
+  },
 };
 
 export default configuration;
