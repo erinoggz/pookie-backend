@@ -13,7 +13,11 @@ class PaypalController {
   issuePayout = async (req: IRequest, res: IResponse) => {
     try {
       const result = await this.paypalService.payout(req);
-      return res.ok(result?.data, result?.message || 'Payment issued successfully!');
+      return res.ok(
+        result?.data,
+        result?.message ||
+          'Payout issued successfully!. You will be notified of your withdrawal status'
+      );
     } catch (error) {
       return res.serverError(
         error,
