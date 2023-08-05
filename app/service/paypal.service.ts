@@ -169,6 +169,13 @@ export class PaypalService {
         null,
         'Payout refund'
       );
+          const user = await User.findById(payout.user);
+
+          await this.notificationService.sendNotification(
+            user.device_token,
+            'Wallet refund',
+            `Your wallet has been refunded with £${payout.amount + 0.17}`
+          );
     }
   }
 
