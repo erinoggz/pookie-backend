@@ -1,6 +1,6 @@
 import { injectable } from 'tsyringe';
 import { v4 as uuidv4 } from 'uuid';
-import { IRequest } from '../common/Interface/IResponse';
+import { ErrnoException, IRequest, ISuccess } from '../common/Interface/IResponse';
 import Helpers from '../lib/helpers';
 import paypal from 'paypal-rest-sdk';
 import StatusCodes from '../lib/response/status-codes';
@@ -11,6 +11,8 @@ import PaginationService from './pagination.service';
 import { NotificationService } from './notification.service';
 import { WalletService } from './wallet.service';
 import User from '../model/user.model';
+import Constants from '../lib/constants';
+import { Types } from 'mongoose';
 
 paypal.configure({
   mode: 'sandbox', // Use 'sandbox' for testing and 'live' for production
@@ -31,7 +33,6 @@ export class PaypalService {
 
   async payout(req: IRequest) {
     const { email, amount } = req.body;
-    console.log('user:', req.user);
     if (!email && !amount) {
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
@@ -43,7 +44,7 @@ export class PaypalService {
       const payout = {
         sender_batch_header: {
           sender_batch_id: batch_id,
-          email_subject: 'Payment from Your Business',
+          email_subject: 'Payment from Pookie',
           recipient_type: 'EMAIL',
         },
         items: [
@@ -61,19 +62,19 @@ export class PaypalService {
       };
       await this.walletService.debitWallet(
         req.user.wallet,
-        0.17,
-        null,
-        'Paypal Payout fee'
-      );
-      await this.walletService.debitWallet(
-        req.user.wallet,
-        amount,
+        amount + Constants.PAYPAL_CHARGE,
         null,
         'Payout debit'
       );
       const createdPayout: any = await new Promise((resolve, reject) => {
-        paypal.payout.create(payout, function (error: any, payout: any) {
+        paypal.payout.create(payout, async function (error: any, payout: any) {
           if (error) {
+            await this.walletService.creditWallet(
+              req.user.wallet,
+              amount + Constants.PAYPAL_CHARGE,
+              null,
+              'Payout refund'
+            );
             reject(error);
           } else {
             resolve(payout);
@@ -87,6 +88,7 @@ export class PaypalService {
           batchStatus: createdPayout?.batch_header?.batch_status,
           user: req.user.id,
           wallet: req.user.wallet,
+          reference: batch_id,
           amount,
         },
         { new: true, upsert: true }
@@ -165,17 +167,19 @@ export class PaypalService {
       );
       await this.walletService.creditWallet(
         payout.wallet,
-        payout.amount + 0.17,
+        payout.amount + Constants.PAYPAL_CHARGE,
         null,
         'Payout refund'
       );
-          const user = await User.findById(payout.user);
+      const user = await User.findById(payout.user);
 
-          await this.notificationService.sendNotification(
-            user.device_token,
-            'Wallet refund',
-            `Your wallet has been refunded with £${payout.amount + 0.17}`
-          );
+      await this.notificationService.sendNotification(
+        user.device_token,
+        'Wallet refund',
+        `Your wallet has been refunded with £${
+          payout.amount + Constants.PAYPAL_CHARGE
+        }`
+      );
     }
   }
 
@@ -195,5 +199,22 @@ export class PaypalService {
     if (result.meta.page < result.meta.pages) {
       await this.validatePayout(page + 1);
     }
+  };
+
+  public payoutHistory = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { status } = req.query;
+
+    const query = { ...req.query, user: new Types.ObjectId(req.user.id) };
+    if (status) {
+      query['batchStatus'] = { $eq: status };
+    }
+
+    query['sort'] = { updatedAt: 'desc' };
+    delete query['status'];
+    const response = await this.pagination.paginate(query);
+
+    return Helpers.success(response);
   };
 }

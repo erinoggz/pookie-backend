@@ -6,6 +6,10 @@ import authMiddleware from '../../middleware/auth.middleware';
 const PaypalRouter: Router = express.Router();
 const paypalController: PaypalController = container.resolve(PaypalController);
 
-PaypalRouter.post('/payout', authMiddleware, paypalController.issuePayout);
+PaypalRouter.post('/payout', authMiddleware, paypalController.issuePayout).get(
+  '/payout',
+  authMiddleware,
+  paypalController.payoutHistory
+);
 
 export default PaypalRouter;
