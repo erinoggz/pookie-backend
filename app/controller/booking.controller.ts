@@ -84,7 +84,7 @@ class BookingController {
     } catch (error) {
       return res.serverError(
         error,
-        error?.message || 'An error occured while trying to fetched bookings',
+        error?.message || 'An error occured while trying to fetch bookings',
         error?.code
       );
     }
@@ -126,7 +126,7 @@ class BookingController {
     } catch (error) {
       return res.serverError(
         error,
-        error?.message || 'An error occured while trying to fetched bookings',
+        error?.message || 'An error occured while trying to fetch bookings',
         error?.code
       );
     }
