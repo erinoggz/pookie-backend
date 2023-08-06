@@ -5,4 +5,5 @@ export default class Constants {
   static hundred = 100;
   static monthly = 30;
   static annually = 365;
+  static PAYPAL_CHARGE = 0.17;
 }

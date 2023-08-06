@@ -11,6 +11,7 @@ import PaginationService from './pagination.service';
 import { NotificationService } from './notification.service';
 import { WalletService } from './wallet.service';
 import User from '../model/user.model';
+import Constants from '../lib/constants';
 
 paypal.configure({
   mode: 'sandbox', // Use 'sandbox' for testing and 'live' for production
@@ -31,7 +32,6 @@ export class PaypalService {
 
   async payout(req: IRequest) {
     const { email, amount } = req.body;
-    console.log('user:', req.user);
     if (!email && !amount) {
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
@@ -43,7 +43,7 @@ export class PaypalService {
       const payout = {
         sender_batch_header: {
           sender_batch_id: batch_id,
-          email_subject: 'Payment from Your Business',
+          email_subject: 'Payment from Pookie',
           recipient_type: 'EMAIL',
         },
         items: [
@@ -61,13 +61,7 @@ export class PaypalService {
       };
       await this.walletService.debitWallet(
         req.user.wallet,
-        0.17,
-        null,
-        'Paypal Payout fee'
-      );
-      await this.walletService.debitWallet(
-        req.user.wallet,
-        amount,
+        amount + Constants.PAYPAL_CHARGE,
         null,
         'Payout debit'
       );
@@ -165,17 +159,19 @@ export class PaypalService {
       );
       await this.walletService.creditWallet(
         payout.wallet,
-        payout.amount + 0.17,
+        payout.amount + Constants.PAYPAL_CHARGE,
         null,
         'Payout refund'
       );
-          const user = await User.findById(payout.user);
+      const user = await User.findById(payout.user);
 
-          await this.notificationService.sendNotification(
-            user.device_token,
-            'Wallet refund',
-            `Your wallet has been refunded with £${payout.amount + 0.17}`
-          );
+      await this.notificationService.sendNotification(
+        user.device_token,
+        'Wallet refund',
+        `Your wallet has been refunded with £${
+          payout.amount + Constants.PAYPAL_CHARGE
+        }`
+      );
     }
   }
 
