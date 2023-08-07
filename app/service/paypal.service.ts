@@ -62,7 +62,7 @@ export class PaypalService {
       };
       await this.walletService.debitWallet(
         req.user.wallet,
-        amount + Constants.PAYPAL_CHARGE,
+        Number(amount) + Constants.PAYPAL_CHARGE,
         null,
         'Payout debit'
       );
@@ -71,7 +71,7 @@ export class PaypalService {
           if (error) {
             await this.walletService.creditWallet(
               req.user.wallet,
-              amount + Constants.PAYPAL_CHARGE,
+              Number(amount) + Constants.PAYPAL_CHARGE,
               null,
               'Payout refund'
             );
@@ -89,7 +89,7 @@ export class PaypalService {
           user: req.user.id,
           wallet: req.user.wallet,
           reference: batch_id,
-          amount,
+          amount: Number(amount),
         },
         { new: true, upsert: true }
       );
@@ -167,7 +167,7 @@ export class PaypalService {
       );
       await this.walletService.creditWallet(
         payout.wallet,
-        payout.amount + Constants.PAYPAL_CHARGE,
+        Number(payout.amount) + Constants.PAYPAL_CHARGE,
         null,
         'Payout refund'
       );
@@ -177,7 +177,7 @@ export class PaypalService {
         user.device_token,
         'Wallet refund',
         `Your wallet has been refunded with £${
-          payout.amount + Constants.PAYPAL_CHARGE
+          Number(payout.amount) + Constants.PAYPAL_CHARGE
         }`
       );
     }

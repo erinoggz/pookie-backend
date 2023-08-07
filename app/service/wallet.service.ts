@@ -149,7 +149,7 @@ export class WalletService {
 
   public creditWallet = async (
     walletId: string,
-    amount: string,
+    amount: number,
     booking: any,
     description?: string
   ) => {
@@ -164,7 +164,7 @@ export class WalletService {
 
       // get current wallet balance and add amount to credit
       const previousBalance = wallet.balance;
-      const newBalance = previousBalance + parseFloat(amount);
+      const newBalance = previousBalance + Number(amount);
 
       await WalletHistory.create(
         [
