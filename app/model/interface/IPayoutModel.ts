@@ -6,6 +6,7 @@ export interface IPayoutModel extends Document {
   amount: number;
   batchId: string;
   reference: string;
+  email: string;
   batchStatus:
     | 'PENDING'
     | 'PROCESSING'
