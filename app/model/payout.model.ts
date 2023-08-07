@@ -11,6 +11,9 @@ const PayoutSchema = new Schema<IPayoutModel>(
     reference: {
       type: String,
     },
+    email: {
+type: String,
+    },
     batchId: {
       type: String,
     },
