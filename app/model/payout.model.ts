@@ -22,7 +22,7 @@ const PayoutSchema = new Schema<IPayoutModel>(
     },
     batchStatus: {
       type: String,
-      enum: ['PENDING', 'PROCESSING', 'SUCCESS', 'FAILED', 'BLOCKED', 'CANCELED'],
+      enum: ['PENDING', 'PROCESSING', 'SUCCESS', 'FAILED', 'DENIED', 'CANCELED'],
       default: 'PENDING',
     },
     resolved: {
