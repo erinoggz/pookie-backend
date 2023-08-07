@@ -69,20 +69,7 @@ export class PaypalService {
       const createdPayout: any = await new Promise((resolve, reject) => {
         paypal.payout.create(payout, async function (error: any, payout: any) {
           if (error) {
-            await this.walletService.creditWallet(
-              req.user.wallet,
-              Number(amount) + Constants.PAYPAL_CHARGE,
-              null,
-              'Payout refund'
-            );
-            await this.notificationService.sendNotification(
-              req.user.device_token,
-              'Wallet refund',
-              `Your wallet has been refunded with £${
-                Number(payout.amount) + Constants.PAYPAL_CHARGE
-              }`
-            );
-            reject(error);
+            reject({ ...error, source: 'paypal' });
           } else {
             resolve(payout);
           }
@@ -104,7 +91,22 @@ export class PaypalService {
       console.log('Payout created:', createdPayout);
       return Helpers.success(createdPayout);
     } catch (error) {
-      console.error('Error creating payout:', error);
+      console.error('Error creating payout:');
+      if (error?.source === 'paypal') {
+        await this.walletService.creditWallet(
+          req.user.wallet,
+          Number(amount) + Constants.PAYPAL_CHARGE,
+          null,
+          'Payout refund'
+        );
+        await this.notificationService.sendNotification(
+          req.user.device_token,
+          'Wallet refund',
+          `Your wallet has been refunded with £${
+            Number(amount) + Constants.PAYPAL_CHARGE
+          }`
+        );
+      }
       throw error;
     }
   }
