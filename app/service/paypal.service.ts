@@ -83,6 +83,7 @@ export class PaypalService {
           user: req.user.id,
           wallet: req.user.wallet,
           reference: batch_id,
+          email,
           amount: Number(amount),
         },
         { new: true, upsert: true }
