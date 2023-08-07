@@ -75,6 +75,13 @@ export class PaypalService {
               null,
               'Payout refund'
             );
+            await this.notificationService.sendNotification(
+              req.user.device_token,
+              'Wallet refund',
+              `Your wallet has been refunded with £${
+                Number(payout.amount) + Constants.PAYPAL_CHARGE
+              }`
+            );
             reject(error);
           } else {
             resolve(payout);
