@@ -117,7 +117,7 @@ export class UserService {
     try {
       const signature = req.headers['complycube-signature'];
       event = eventVerifier.constructEvent(JSON.stringify(req.body), signature);
-      console.log({ event, body: req.body });
+      console.log({ event, res });
       let status = 'unverified';
       // Handle the event
       switch (event.type) {
