@@ -113,47 +113,27 @@ export class UserService {
     res: IResponse
   ): Promise<ISuccess | ErrnoException> => {
     let event;
-    console.log({ webook: 'webook called oooooooooo' });
+    console.log('wwebook called');
     try {
       const signature = req.headers['complycube-signature'];
       event = eventVerifier.constructEvent(JSON.stringify(req.body), signature);
-      console.log({ event, signature });
+      console.log({ event });
       let status = 'unverified';
       // Handle the event
       switch (event.type) {
         case 'check.pending': {
-          const checkId = event.payload.id;
-          console.log(`Check ${checkId} is pending`);
-          await User.findByIdAndUpdate(
-            req.user.id,
-            { verification_satus: 'pending' },
-            { new: true }
-          );
           status = 'pending';
-
           break;
         }
         case 'check.failed': {
-          const checkId = event.payload.id;
-          console.log(`Check ${checkId} is failed`);
-          await User.findByIdAndUpdate(
-            req.user.id,
-            { verification_satus: 'failed' },
-            { new: true }
-          );
           status = 'failed';
-
           break;
         }
         case 'check.completed.clear': {
-          const checkId = event.payload.id;
-          console.log(`Check ${event.payload} is check.completed.clear`);
           status = 'verified';
           break;
         }
         case 'check.completed.rejected': {
-          const checkId = event.payload.id;
-          console.log(`Check ${event.payload} is check.completed.rejected`);
           status = 'failed';
           break;
         }
@@ -169,7 +149,7 @@ export class UserService {
         { new: true }
       );
       // Return a response to acknowledge receipt of the event
-      res.json({ received: true });
+      return Helpers.success({ received: true });
     } catch (error) {
       return Helpers.CustomException(
         StatusCodes.UNPROCESSABLE_ENTITY,
