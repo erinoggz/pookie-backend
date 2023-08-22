@@ -36,16 +36,14 @@ export interface IUser extends Document {
   lessons: Array<string>;
   language: Array<string>;
   firstAid: boolean;
+  verification_id: string;
   childcareCertification: string;
   cpr: string;
   ownTransport: boolean;
   availability: 'available' | 'busy' | 'not_available';
   job: 'sitter' | 'au_pair' | 'nanny' | 'tutor';
   lookingFor: 'sitter' | 'au_pair' | 'nanny' | 'tutor';
-  meansOfVerification:
-    | 'international_passport'
-    | 'drivers_license'
-    | 'national_identity_card';
+  verification_satus: 'pending' | 'failed' | 'verified' | 'unverified';
   verificationData: string;
   socialCredentials: object;
   lastLogin: Date;

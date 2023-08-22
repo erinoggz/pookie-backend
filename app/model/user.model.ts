@@ -59,13 +59,13 @@ const UserSchema = new Schema<IUserModel>(
       type: String,
       enum: Object.values(['sitter', 'au_pair', 'nanny', 'tutor']).concat([null]),
     },
-    meansOfVerification: {
+    verification_id: {
       type: String,
-      enum: Object.values([
-        'international_passport',
-        'drivers_license',
-        'national_identity_card',
-      ]).concat([null]),
+    },
+    verification_satus: {
+      type: String,
+      enum: ['pending', 'failed', 'verified', 'unverified'],
+      default: 'unverified',
     },
     availability: {
       type: String,
