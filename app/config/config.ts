@@ -39,6 +39,10 @@ const configuration = {
     client_secret: process.env.PAYPAL_SECRET_KEY,
     client_id: process.env.PAYPAL_CLIENT_ID,
   },
+  complycube: {
+    complycube_api_key: process.env.COMPLYCUBE_API_KEY || 'jnghknrlin',
+    complycube_webhook_secret: process.env.COMPLYCUBE_WEBHOOK_SECRET,
+  },
 };
 
 export default configuration;
