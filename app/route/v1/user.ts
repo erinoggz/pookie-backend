@@ -9,6 +9,6 @@ const userController: UserController = container.resolve(UserController);
 UserRouter.post('/sitters', authMiddleware, userController.getSitters);
 UserRouter.put('/garda-check', authMiddleware, userController.addGarderCheck);
 UserRouter.get('/verify', authMiddleware, userController.complycubeVerification);
-UserRouter.get('/comply/webhook', userController.complycubeWebhook);
+UserRouter.post('/comply/webhook', userController.complycubeWebhook);
 
 export default UserRouter;
