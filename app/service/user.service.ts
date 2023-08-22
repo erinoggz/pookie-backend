@@ -103,10 +103,11 @@ export class UserService {
     req: any
   ): Promise<ISuccess | ErrnoException> => {
     let event;
+    console.log({ webook: 'webook called oooooooooo' });
     try {
       const signature = req.headers['complycube-signature'];
       event = eventVerifier.constructEvent(JSON.stringify(req.body), signature);
-
+      console.log({ event, signature });
       // Handle the event
       switch (event.type) {
         case 'check.completed': {
