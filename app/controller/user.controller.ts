@@ -47,6 +47,45 @@ class UserController {
       );
     }
   };
+
+  /**
+   * @route GET api/v1/user/verify.
+   * @desc GET verification status
+   * @access Public.
+   */
+  complycubeVerification = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.userService.complycubeVerification(req);
+      return res.ok(
+        result?.data,
+        result?.message || 'verification initiated successfully!'
+      );
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to verify user',
+        error?.code
+      );
+    }
+  };
+
+  /**
+   * @route GET api/v1/user/comply/webhook.
+   * @desc GET webhook
+   * @access Public.
+   */
+  complycubeWebhook = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.userService.complycubeWebhook(req);
+      return res.ok(result?.data, result?.message || 'Webhook fired successfully!');
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to run webhook',
+        error?.code
+      );
+    }
+  };
 }
 
 export default UserController;

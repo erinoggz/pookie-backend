@@ -5,7 +5,11 @@ import { ErrnoException, IRequest, ISuccess } from '../common/Interface/IRespons
 import Helpers from '../lib/helpers';
 import User, { IUserModel } from '../model/user.model';
 import PaginationService from './pagination.service';
-
+import StatusCodes from '../lib/response/status-codes';
+import { VerficationService } from './verification.service';
+import { EventVerifier } from '@complycube/api';
+import config from '../config/config';
+const eventVerifier = new EventVerifier(config.complycube.complycube_webhook_secret);
 @injectable()
 export class UserService {
   pagination: PaginationService<IUserModel>;
@@ -24,7 +28,7 @@ export class UserService {
     'userType',
   ];
 
-  constructor() {
+  constructor(private verificationService: VerficationService) {
     this.pagination = new PaginationService(User);
   }
   public getSitters = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
@@ -77,5 +81,72 @@ export class UserService {
     user.gardaCheck = 'pending';
     await user.save();
     return Helpers.success(null);
+  };
+
+  public complycubeVerification = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    try {
+      const client = await this.verificationService.createClient(req.user);
+      const session = await this.verificationService.createClientSession(client.id);
+
+      return Helpers.success(session);
+    } catch (error) {
+      return Helpers.CustomException(
+        StatusCodes.UNPROCESSABLE_ENTITY,
+        error?.message
+      );
+    }
+  };
+
+  public complycubeWebhook = async (
+    req: any
+  ): Promise<ISuccess | ErrnoException> => {
+    let event;
+    try {
+      const signature = req.headers['complycube-signature'];
+      event = eventVerifier.constructEvent(JSON.stringify(req.body), signature);
+
+      // Handle the event
+      switch (event.type) {
+        case 'check.completed': {
+          const checkId = event.payload.id;
+          const checkOutCome = event.payload.outcome;
+          console.log(`Check ${checkId} completed with outcome ${checkOutCome}`);
+          console.log('payload', event.payload);
+          break;
+        }
+        case 'check.pending': {
+          const checkId = event.payload.id;
+          console.log(`Check ${checkId} is pending`);
+          break;
+        }
+        case 'check.failed': {
+          const checkId = event.payload.id;
+          console.log(`Check ${checkId} is failed`);
+          break;
+        }
+        case 'check.completed.clear': {
+          const checkId = event.payload.id;
+          console.log(`Check ${event.payload} is check.completed.clear`);
+          break;
+        }
+        case 'check.completed.rejected': {
+          const checkId = event.payload.id;
+          console.log(`Check ${event.payload} is check.completed.rejected`);
+          break;
+        }
+        // ... handle other event types
+        default: {
+          // Unexpected event type
+          return Helpers.CustomException(StatusCodes.BAD_REQUEST, null);
+        }
+      }
+    } catch (error) {
+      return Helpers.CustomException(
+        StatusCodes.UNPROCESSABLE_ENTITY,
+        `Webhook Error: ${error?.message}`
+      );
+    }
   };
 }
