@@ -14,7 +14,7 @@ const PasswordResetSchema = new Schema<IOTPModel>(
     },
     userType: {
       type: String,
-      enum: Object.values(['PARENT', 'SITTER', 'GRIND']).concat([null]),
+      enum: Object.values(['parent', 'sitter', 'tutor']).concat([null]),
     },
     expiresAt: {
       type: Date,

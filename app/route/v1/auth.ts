@@ -12,6 +12,8 @@ AuthRouter.post('/register', authValidator.register, authController.register)
   .post('/login', authValidator.login, authController.login)
   .post('/verify', authValidator.verify, authController.verify)
   .post('/resend-otp', authValidator.resendOTP, authController.resendOTP)
+  .post('/refresh-token', authController.refreshToken)
+  .post('/logout', authController.logout)
   .put('/forgot-password', authValidator.forgot, authController.forgot)
   .put('/reset-password', authValidator.reset, authController.reset)
   .put(
@@ -19,6 +21,8 @@ AuthRouter.post('/register', authValidator.register, authController.register)
     authMiddleware,
     authValidator.change,
     authController.change
-  );
+  )
+  .put('/profile-setup', authMiddleware, authController.profileSetup)
+  .get('/me', authMiddleware, authController.me);
 
 export default AuthRouter;

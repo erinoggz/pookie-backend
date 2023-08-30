@@ -5,31 +5,45 @@ export interface IUser extends Document {
   email: string;
   password: string;
   phoneNumber: string;
-  gender: 'MALE' | 'FEMALE' | 'NOT_SPECIFIED';
+  current_subscription: Types.ObjectId;
+  gender: 'male' | 'female' | 'not_specified';
   profilePicture: string;
-  userType: 'PARENT' | 'SITTER' | 'GRIND';
+  userType: 'parent' | 'sitter' | 'tutor';
   firstName: string;
+  wallet: string;
+  version: string;
+  referredBy: string;
   lastName: string;
   address: string;
   aboutMe: string;
   state: string;
+  urlKey: string;
+  age: string;
+  dateOfBirth: string;
+  training: boolean;
+  smoker: boolean;
+  gardaCheck: 'pending' | 'verified' | 'unverified';
+  gardaCheckdoc: string;
+  ownCar: boolean;
   country: string;
   noOfChildren: string;
   specialNeeds: string;
-  pets: boolean;
+  experience: string;
+  profileSetupComplete: boolean;
+  pets: string;
   rate: string;
-  language: string;
-  firstAid: string;
+  device_token: string;
+  lessons: Array<string>;
+  language: Array<string>;
+  firstAid: boolean;
+  verification_id: string;
   childcareCertification: string;
   cpr: string;
-  ownTransport: string;
-  availability: 'AVAILABLE' | 'BUSY' | 'NOT_AVAILABLE';
-  Job: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
-  lookingFor: 'SITTER' | 'AU_PAIR' | 'NANNY' | 'GRIND';
-  meansOfVerification:
-    | 'INTERNATIONAL_PASSPORT'
-    | 'DRIVERS_LICENSE'
-    | 'NATIONAL_IDENTITY_CARD';
+  ownTransport: boolean;
+  availability: 'available' | 'busy' | 'not_available';
+  job: 'sitter' | 'au_pair' | 'nanny' | 'tutor';
+  lookingFor: 'sitter' | 'au_pair' | 'nanny' | 'tutor';
+  verification_satus: 'pending' | 'failed' | 'verified' | 'unverified';
   verificationData: string;
   socialCredentials: object;
   lastLogin: Date;
@@ -37,4 +51,6 @@ export interface IUser extends Document {
   googleId: string;
   facebookId: string;
   userVerifiedAt: Date;
+  childcareCertified: boolean;
+  ratings: { reviewCount: number; averageRatings: number };
 }

@@ -1,14 +1,20 @@
 import * as argon2 from 'argon2';
 import * as jwt from 'jsonwebtoken';
-import { model, Schema } from 'mongoose';
-import configuration from '../config/config';
+import { model, Schema, plugin } from 'mongoose';
 import { IUser } from './interface/IUser';
+import slugGenerator from 'mongoose-slug-generator';
 
 // Create the model schema & register your custom methods here
 export interface IUserModel extends IUser {
   comparePassword(password: string): Promise<boolean>;
-  generateJWT(expiresIn: string): string;
+  generateJWT(expiresIn: string, secret: string): string;
 }
+
+plugin(slugGenerator, {
+  separator: '-',
+  lang: 'en',
+  truncate: 120,
+});
 
 // Create the user schema
 const UserSchema = new Schema<IUserModel>(
@@ -18,6 +24,9 @@ const UserSchema = new Schema<IUserModel>(
       unique: true,
       required: true,
     },
+    wallet: {
+      type: String,
+    },
     password: {
       type: String,
       required: true,
@@ -25,62 +34,110 @@ const UserSchema = new Schema<IUserModel>(
     phoneNumber: {
       type: String,
     },
+    referredBy: {
+      type: String,
+    },
+    current_subscription: {
+      type: Schema.Types.ObjectId,
+      ref: 'Subscription',
+    },
+    urlKey: { type: String, slug: ['firstName', 'lastName'], unique: true },
     gender: {
       type: String,
-      enum: ['MALE', 'FEMALE', 'NOT_SPECIFIED'],
-      default: 'NOT_SPECIFIED',
+      enum: ['male', 'female', 'not_specified'],
+      default: 'not_specified',
     },
     userType: {
       type: String,
-      enum: Object.values(['PARENT', 'SITTER', 'GRIND']).concat([null]),
+      enum: Object.values(['parent', 'sitter', 'tutor']).concat([null]),
     },
-    Job: {
+    job: {
       type: String,
-      enum: Object.values(['SITTER', 'AU_PAIR', 'NANNY', 'GRIND']).concat([null]),
+      enum: Object.values(['sitter', 'au_pair', 'nanny', 'tutor']).concat([null]),
     },
     lookingFor: {
       type: String,
-      enum: Object.values(['SITTER', 'AU_PAIR', 'NANNY', 'GRIND']).concat([null]),
+      enum: Object.values(['sitter', 'au_pair', 'nanny', 'tutor']).concat([null]),
     },
-    meansOfVerification: {
+    verification_id: {
       type: String,
-      enum: Object.values([
-        'INTERNATIONAL_PASSPORT',
-        'DRIVERS_LICENSE',
-        'NATIONAL_IDENTITY_CARD',
-      ]).concat([null]),
+    },
+    verification_satus: {
+      type: String,
+      enum: ['pending', 'failed', 'verified', 'unverified'],
+      default: 'unverified',
     },
     availability: {
       type: String,
-      enum: ['AVAILABLE', 'BUSY', 'NOT_AVAILABLE'],
-      default: 'NOT_AVAILABLE',
+      enum: ['available', 'busy', 'not_available'],
+      default: 'available',
     },
     profilePicture: String,
     firstName: String,
     lastName: String,
     address: String,
+    device_token: String,
     aboutMe: String,
     state: String,
     country: String,
     noOfChildren: String,
     specialNeeds: String,
     userVerifiedAt: Date,
-    pets: {
+    pets: String,
+    dateOfBirth: String,
+    training: String,
+    smoker: {
+      type: Boolean,
+      default: false,
+    },
+    gardaCheck: {
+      type: String,
+      enum: ['pending', 'verified', 'unverified'],
+      default: 'unverified',
+    },
+    experience: String,
+    ownCar: {
       type: Boolean,
       default: false,
     },
     rate: String,
-    language: String,
-    firstAid: String,
+    lessons: [String],
+    language: [String],
+    firstAid: {
+      type: Boolean,
+      default: false,
+    },
+    childcareCertified: {
+      type: Boolean,
+      default: false,
+    },
     childcareCertification: String,
     cpr: String,
-    ownTransport: String,
+    ownTransport: {
+      type: Boolean,
+      default: false,
+    },
+    version: String,
     googleId: String,
     facebookId: String,
     lastLogin: Date,
     status: {
       type: Boolean,
       default: true,
+    },
+
+    gardaCheckdoc: {
+      type: String,
+    },
+    ratings: {
+      reviewCount: {
+        type: Number,
+        default: 0,
+      },
+      averageRatings: {
+        type: Number,
+        default: 0,
+      },
     },
   },
   {
@@ -114,14 +171,17 @@ UserSchema.methods.comparePassword = function (password: string): Promise<boolea
  * Generates JWT token for user.
  * @return {string} The generated user JWT.
  */
-UserSchema.methods.generateJWT = function (expiresIn: string): string {
+UserSchema.methods.generateJWT = function (
+  expiresIn: string,
+  secret: string
+): string {
   const payload = {
     id: this._id,
     email: this.email,
     userType: this.userType,
   };
 
-  return jwt.sign(payload, configuration.web.jwt_secret, {
+  return jwt.sign(payload, secret, {
     expiresIn,
   });
 };
@@ -130,4 +190,18 @@ UserSchema.methods.generateJWT = function (expiresIn: string): string {
 const User = model<IUserModel>('Users', UserSchema);
 
 export default User;
+
+UserSchema.index({
+  userType: 1,
+  gender: 1,
+  country: 1,
+  state: 1,
+  childcareCertified: 1,
+  specialNeeds: 1,
+  rate: 1,
+  ownTransport: 1,
+  firstAid: 1,
+  job: 1,
+});
+
 User.syncIndexes();

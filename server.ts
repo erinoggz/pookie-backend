@@ -7,10 +7,14 @@ import mongoose from 'mongoose';
 import response from './app/lib/response';
 import jwtMiddleware from './app/middleware/jwt.middleware';
 import passport from 'passport';
+import cookieParser from 'cookie-parser';
 
 import { container } from 'tsyringe';
 import { LoggerService } from './app/service/logger.service';
 import StatusCodes from './app/lib/response/status-codes';
+import seeder from './app/seeds';
+import './app/utils/jobs';
+
 const logger: LoggerService = container.resolve(LoggerService);
 
 class Server {
@@ -35,6 +39,7 @@ class Server {
   public configuration() {
     this.mongooseConnection();
     this.app.use(response);
+    this.app.use(cookieParser());
     this.app.use(cors());
     this.app.use(express.json());
 
@@ -49,9 +54,15 @@ class Server {
     // Mount routes
     Routes(this.app);
   }
+
+  public databaseSeeds = async function () {
+    await seeder.seedDb();
+  };
+
   public async start() {
     const PORT = config.web.port;
     this.configuration();
+    this.databaseSeeds();
     this.app.listen(PORT, () => {
       logger.log(`Server is listening on port ${PORT}.`);
     });
