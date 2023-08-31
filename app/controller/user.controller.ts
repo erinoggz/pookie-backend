@@ -83,6 +83,27 @@ class UserController {
       );
     }
   };
+
+  /**
+   * @route PUT api/v1/user/account/delete.
+   * @desc PUT delete user
+   * @access Public.
+   */
+  deleteAccount = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.userService.deleteAccount(req);
+      return res.ok(
+        result?.data,
+        result?.message || 'Account deleted successfully!'
+      );
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to delete account',
+        error?.code
+      );
+    }
+  };
 }
 
 export default UserController;

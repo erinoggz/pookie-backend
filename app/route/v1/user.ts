@@ -7,6 +7,7 @@ const UserRouter: Router = express.Router();
 const userController: UserController = container.resolve(UserController);
 
 UserRouter.post('/sitters', authMiddleware, userController.getSitters);
+UserRouter.put('/account/delete', authMiddleware, userController.deleteAccount);
 UserRouter.put('/garda-check', authMiddleware, userController.addGarderCheck);
 UserRouter.get('/verify', authMiddleware, userController.complycubeVerification);
 UserRouter.post('/comply/webhook', userController.complycubeWebhook);

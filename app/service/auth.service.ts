@@ -144,6 +144,7 @@ export class AuthService {
 
     const user = await User.findOne({
       email,
+      status: true,
     });
     // Validate email addresss
     if (!user)

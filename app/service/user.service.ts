@@ -88,6 +88,18 @@ export class UserService {
     return Helpers.success(null);
   };
 
+  public deleteAccount = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { status: false },
+      { upsert: true, new: true }
+    );
+
+    return Helpers.success(null);
+  };
+
   public complycubeVerification = async (
     req: IRequest
   ): Promise<ISuccess | ErrnoException> => {
