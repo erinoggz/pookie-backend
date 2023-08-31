@@ -60,6 +60,7 @@ export class UserService {
       query['lessons'] = { $in: body['lessons'] };
     }
     query['userType'] = { $ne: UserType.parent };
+    query['status'] = { $eq: true };
     if (srch) {
       const searchQuery = {
         $or: [
