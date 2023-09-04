@@ -123,7 +123,7 @@ export class UserService {
 
   public complycubeWebhook = async (
     req: any,
-    res: IResponse
+    res
   ): Promise<ISuccess | ErrnoException> => {
     let event;
     console.log('webhook called', req.body);
@@ -156,7 +156,7 @@ export class UserService {
           return Helpers.CustomException(StatusCodes.BAD_REQUEST, null);
         }
       }
-      console.log(res);
+      console.log(res?.body);
       await User.findOneAndUpdate(
         { verification_id: event.payload.id },
         { verification_satus: status },
