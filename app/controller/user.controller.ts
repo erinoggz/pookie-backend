@@ -73,7 +73,7 @@ class UserController {
    */
   complycubeWebhook = async (req: IRequest, res: IResponse) => {
     try {
-      const result = await this.userService.complycubeWebhook(req, res);
+      const result = await this.userService.complycubeWebhook(req);
       return res.ok(result?.data, result?.message || 'Webhook fired successfully!');
     } catch (error) {
       return res.serverError(
