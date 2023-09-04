@@ -126,11 +126,18 @@ export class UserService {
     res: IResponse
   ): Promise<ISuccess | ErrnoException> => {
     let event;
-    console.log('wwebook called');
+    // const eventBody = {
+    //   ...req.body,
+    // };
+    const eventBody = {
+      ...req.body,
+      resourceType: 'clients',
+    };
+    console.log('webhook called', req.body, eventBody);
     try {
       const signature = req.headers['complycube-signature'];
-      event = eventVerifier.constructEvent(JSON.stringify(req.body), signature);
-      console.log({ event, res });
+      event = eventVerifier.constructEvent(JSON.stringify(eventBody), signature);
+      console.log({ event });
       let status = 'unverified';
       // Handle the event
       switch (event.type) {
