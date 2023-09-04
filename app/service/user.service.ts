@@ -156,6 +156,7 @@ export class UserService {
           return Helpers.CustomException(StatusCodes.BAD_REQUEST, null);
         }
       }
+      console.log(res);
       await User.findOneAndUpdate(
         { verification_id: event.payload.id },
         { verification_satus: status },
