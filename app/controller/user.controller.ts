@@ -73,12 +73,33 @@ class UserController {
    */
   complycubeWebhook = async (req: IRequest, res: IResponse) => {
     try {
-      const result = await this.userService.complycubeWebhook(req, res);
+      const result = await this.userService.complycubeWebhook(req);
       return res.ok(result?.data, result?.message || 'Webhook fired successfully!');
     } catch (error) {
       return res.serverError(
         error,
         error?.message || 'An error occured while trying to run webhook',
+        error?.code
+      );
+    }
+  };
+
+  /**
+   * @route PUT api/v1/user/account/delete.
+   * @desc PUT delete user
+   * @access Public.
+   */
+  deleteAccount = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.userService.deleteAccount(req);
+      return res.ok(
+        result?.data,
+        result?.message || 'Account deleted successfully!'
+      );
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to delete account',
         error?.code
       );
     }

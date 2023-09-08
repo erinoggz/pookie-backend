@@ -49,4 +49,16 @@ export class VerficationService {
       );
     }
   };
+
+  checkEvent = async (CHECK_ID: string): Promise<any> => {
+    try {
+      const check = await complycube.check.get(`${CHECK_ID}`);
+      return check;
+    } catch (error) {
+      return Helpers.CustomException(
+        StatusCodes.UNPROCESSABLE_ENTITY,
+        error?.message
+      );
+    }
+  };
 }

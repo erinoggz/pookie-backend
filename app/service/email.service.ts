@@ -1,45 +1,36 @@
+import nodemailer from 'nodemailer';
 import config from '../config/config';
-import sgMail from '@sendgrid/mail';
-import * as path from 'path';
-import * as ejs from 'ejs';
-import { IEmail } from '../common/Types/email';
-import Helpers from '../lib/helpers';
-import StatusCodes from '../lib/response/status-codes';
-import { ErrnoException } from '../common/Interface/IResponse';
-sgMail.setApiKey(config.sendgrid.sendgrid_api_key);
+import { injectable } from 'tsyringe';
+import { LoggerService } from './logger.service';
 
+@injectable()
 export class EmailService {
-  sendEmail = async (emailProp: IEmail): Promise<true | ErrnoException> => {
+  private transporter: nodemailer.Transporter;
+
+  constructor(private logger: LoggerService) {
+    this.transporter = nodemailer.createTransport({
+      name: config.smtp.name,
+      host: config.smtp.host,
+      port: config.smtp.port,
+      secure: true,
+      auth: {
+        user: config.smtp.auth,
+        pass: config.smtp.pass,
+      },
+    });
+  }
+
+  async sendEmail(to: string, html: string, subject?: string, sender?: string) {
     try {
-      const template = await ejs.renderFile(
-        path.join(__dirname, `../templates/${emailProp.template_name}.ejs`),
-        {
-          email: emailProp.recipient_email,
-          action_url: emailProp.action_url,
-          email_data: emailProp.email_data,
-        }
-      );
-      if (!template) throw new Error('Template does not exist!');
-
-      const emailData = {
-        from: config.sendgrid.email_from,
-        to: emailProp.recipient_email || null,
-        subject: `${emailProp.subject}` || 'Welcome',
-        html: template,
-      };
-
-      const send = await sgMail.send(emailData);
-      if (!send) {
-        throw new Error(
-          'Unable to send emails at this time. Please try again later'
-        );
-      }
-      return true;
+      const info = await this.transporter.sendMail({
+        from: sender || config.smtp.sender,
+        to,
+        subject: subject || 'Hello',
+        html,
+      });
+      this.logger.log(`Message sent: ${JSON.stringify(info)}`);
     } catch (error) {
-      return Helpers.CustomException(
-        StatusCodes.UNPROCESSABLE_ENTITY,
-        error?.message
-      );
+      this.logger.error(`Error sending email: ${JSON.stringify(error)}`);
     }
-  };
+  }
 }

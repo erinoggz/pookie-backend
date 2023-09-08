@@ -1,12 +1,7 @@
 import { Types } from 'mongoose';
 import { injectable } from 'tsyringe';
 import { UserType } from '../common/Enum/userType';
-import {
-  ErrnoException,
-  IRequest,
-  IResponse,
-  ISuccess,
-} from '../common/Interface/IResponse';
+import { ErrnoException, IRequest, ISuccess } from '../common/Interface/IResponse';
 import Helpers from '../lib/helpers';
 import User, { IUserModel } from '../model/user.model';
 import PaginationService from './pagination.service';
@@ -14,6 +9,7 @@ import StatusCodes from '../lib/response/status-codes';
 import { VerficationService } from './verification.service';
 import { EventVerifier } from '@complycube/api';
 import config from '../config/config';
+import { LoggerService } from './logger.service';
 const eventVerifier = new EventVerifier(config.complycube.complycube_webhook_secret);
 @injectable()
 export class UserService {
@@ -33,7 +29,10 @@ export class UserService {
     'userType',
   ];
 
-  constructor(private verificationService: VerficationService) {
+  constructor(
+    private verificationService: VerficationService,
+    private logger: LoggerService
+  ) {
     this.pagination = new PaginationService(User);
   }
   public getSitters = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
@@ -60,6 +59,7 @@ export class UserService {
       query['lessons'] = { $in: body['lessons'] };
     }
     query['userType'] = { $ne: UserType.parent };
+    query['status'] = { $eq: true };
     if (srch) {
       const searchQuery = {
         $or: [
@@ -88,6 +88,18 @@ export class UserService {
     return Helpers.success(null);
   };
 
+  public deleteAccount = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { status: false },
+      { upsert: true, new: true }
+    );
+
+    return Helpers.success(null);
+  };
+
   public complycubeVerification = async (
     req: IRequest
   ): Promise<ISuccess | ErrnoException> => {
@@ -109,32 +121,61 @@ export class UserService {
   };
 
   public complycubeWebhook = async (
-    req: any,
-    res: IResponse
+    req: any
   ): Promise<ISuccess | ErrnoException> => {
     let event;
-    console.log('wwebook called');
+    this.logger.log('webhook called');
     try {
       const signature = req.headers['complycube-signature'];
       event = eventVerifier.constructEvent(JSON.stringify(req.body), signature);
-      console.log({ event, res });
-      let status = 'unverified';
       // Handle the event
       switch (event.type) {
-        case 'check.pending': {
-          status = 'pending';
-          break;
-        }
         case 'check.failed': {
-          status = 'failed';
+          this.logger.log('check.failed event fired');
+          const checkId = event.payload.id;
+          const check = await this.verificationService.checkEvent(checkId);
+          if (check?.clientId) {
+            this.logger.log(`check.failed status updated for ${check?.clientId} `);
+            await User.findOneAndUpdate(
+              { verification_id: check.clientId },
+              { verification_satus: 'failed' },
+              { new: true }
+            );
+          }
           break;
         }
-        case 'check.completed.clear': {
-          status = 'verified';
+        case 'check.completed': {
+          this.logger.log('check.failed event fired');
+          const checkId = event.payload.id;
+          const checkOutCome = event.payload.outcome;
+          const check = await this.verificationService.checkEvent(checkId);
+          if (check?.clientId) {
+            this.logger.log(
+              `check.completed status updated for ${check?.clientId} `
+            );
+            await User.findOneAndUpdate(
+              { verification_id: check.clientId },
+              {
+                verification_satus:
+                  checkOutCome === 'clear' ? 'verified' : 'pending',
+              },
+              { new: true }
+            );
+          }
           break;
         }
-        case 'check.completed.rejected': {
-          status = 'failed';
+        case 'check.pending': {
+          this.logger.log('check.failed event fired');
+          const checkId = event.payload.id;
+          const check = await this.verificationService.checkEvent(checkId);
+          if (check?.clientId) {
+            this.logger.log(`check.pending status updated for ${check?.clientId} `);
+            await User.findOneAndUpdate(
+              { verification_id: check.clientId },
+              { verification_satus: 'pending' },
+              { new: true }
+            );
+          }
           break;
         }
         // ... handle other event types
@@ -143,11 +184,6 @@ export class UserService {
           return Helpers.CustomException(StatusCodes.BAD_REQUEST, null);
         }
       }
-      await User.findOneAndUpdate(
-        { verification_id: event.payload.id },
-        { verification_satus: status },
-        { new: true }
-      );
       // Return a response to acknowledge receipt of the event
       return Helpers.success({ received: true });
     } catch (error) {

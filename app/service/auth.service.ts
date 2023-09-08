@@ -8,7 +8,6 @@ import {
   IResponse,
   ISuccess,
 } from '../common/Interface/IResponse';
-import { IEmail } from '../common/Types/email';
 import configuration from '../config/config';
 import Helpers from '../lib/helpers';
 import StatusCodes from '../lib/response/status-codes';
@@ -18,8 +17,10 @@ import Plan from '../model/plan.model';
 import Subscription from '../model/subscription.model';
 import User, { IUserModel } from '../model/user.model';
 import plans from '../seeds/data/plan/plan';
-import { EmailService } from './email.service';
 import { WalletService } from './wallet.service';
+import verifyEmail from '../templates/verifyEmail';
+import resetEmail from '../templates/resetEmail';
+import { EmailService } from './email.service';
 
 @injectable()
 export class AuthService {
@@ -96,15 +97,6 @@ export class AuthService {
       { upsert: true, new: true }
     );
 
-    const emailData: IEmail = {
-      subject: 'Account Verification',
-      template_name: 'verify',
-      recipient_email: email,
-      short_response_message:
-        'verify your account :). The Otp will expire in 5 minutes',
-      email_data: `${input.otp}`,
-    };
-
     let plan_code = plans[0].plan_code;
 
     if (userType === UserType.sitter) {
@@ -127,12 +119,16 @@ export class AuthService {
     user = await user.save();
     // Make response not to send user password
     user.password = undefined;
-    await this.emailService.sendEmail(emailData);
+    await this.emailService.sendEmail(
+      email,
+      verifyEmail(input.otp),
+      'Account Verification'
+    );
 
     return Helpers.success(
       user,
       'An Email has been sent to ' +
-        `${user.email}. Please follow the instructions to ${emailData.short_response_message}`
+        `${user.email}. Please follow the instructions to verify your account :). The Otp will expire in 5 minutes`
     );
   };
 
@@ -144,6 +140,7 @@ export class AuthService {
 
     const user = await User.findOne({
       email,
+      status: true,
     });
     // Validate email addresss
     if (!user)
@@ -279,20 +276,16 @@ export class AuthService {
       { upsert: true, new: true }
     );
 
-    const emailData: IEmail = {
-      subject: 'Account Verification',
-      template_name: 'verify',
-      recipient_email: email,
-      short_response_message:
-        'verify your account :). The Otp will expire in 1 hour',
-      email_data: `${input.otp}`,
-    };
     await user.save();
-    await this.emailService.sendEmail(emailData);
+    await this.emailService.sendEmail(
+      email,
+      verifyEmail(input.otp),
+      'Account Verification'
+    );
     return Helpers.success(
       null,
       'An Email has been sent to ' +
-        `${user.email}. Please follow the instructions to ${emailData.short_response_message}`
+        `${user.email}. Please follow the instructions to verify your account :). The Otp will expire in 1 hour`
     );
   };
 
@@ -326,19 +319,16 @@ export class AuthService {
       { upsert: true, new: true }
     );
 
-    const emailData: IEmail = {
-      subject: 'Password Reset OTP',
-      template_name: 'reset',
-      recipient_email: email,
-      short_response_message: 'reset your password. The Otp will expire in 1 hour',
-      email_data: `${input.otp}`,
-    };
+    await this.emailService.sendEmail(
+      email,
+      resetEmail(input.otp),
+      'Password Reset OTP'
+    );
 
-    await this.emailService.sendEmail(emailData);
     return Helpers.success(
       null,
       'An Email has been sent to ' +
-        `${user.email}. Please follow the instructions to ${emailData.short_response_message}`
+        `${user.email}. Please follow the instructions to reset your password. The Otp will expire in 1 hour`
     );
   };
 
