@@ -31,6 +31,14 @@ const configuration = {
     sendgrid_api_key: process.env.SENDGRID_API_KEY,
     sendgrid_jwt_duration: process.env.JWT_DURATION || '10m',
   },
+  smtp: {
+    sender: 'noreply@pookieapp.ie',
+    auth: 'Pookie Babysitting App',
+    name: 'pookieapp.ie',
+    host: 'smtp.mandrillapp.com',
+    port: 465,
+    pass: process.env.MANDRILL_API_KEY,
+  },
   stripe: {
     stripe_secret_key: process.env.STRIPE_SECRET_KEY,
     stripe_publishable_key: process.env.STRIPE_PUBLISHABLE_KEY,
