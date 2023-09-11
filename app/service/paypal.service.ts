@@ -52,7 +52,7 @@ export class PaypalService {
             recipient_type: 'EMAIL',
             amount: {
               value: req.body.amount,
-              currency: 'GBP',
+              currency: 'EUR',
             },
             receiver: req.body.email,
             note: 'Thank you for your payment!',
@@ -103,7 +103,7 @@ export class PaypalService {
         await this.notificationService.sendNotification(
           req.user.device_token,
           'Wallet refund',
-          `Your wallet has been refunded with £${
+          `Your wallet has been refunded with €${
             Number(amount) + Constants.PAYPAL_CHARGE
           }`
         );
@@ -151,7 +151,7 @@ export class PaypalService {
           await this.notificationService.sendNotification(
             user.device_token,
             'Payout success',
-            `Withdrawal of £${payout.amount} was successful`
+            `Withdrawal of €${payout.amount} was successful`
           );
         } else {
           await Payout.findOneAndUpdate(
@@ -186,7 +186,7 @@ export class PaypalService {
       await this.notificationService.sendNotification(
         user.device_token,
         'Wallet refund',
-        `Your wallet has been refunded with £${
+        `Your wallet has been refunded with €${
           Number(payout.amount) + Constants.PAYPAL_CHARGE
         }`
       );
