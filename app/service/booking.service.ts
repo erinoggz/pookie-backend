@@ -85,7 +85,7 @@ export class BookingService {
       await this.notificationService.sendNotification(
         user.device_token,
         'Booking fee',
-        `Debit of £${bookingFee} has been deducted from your wallet`
+        `Debit of €${bookingFee} has been deducted from your wallet`
       );
     }
 
@@ -245,7 +245,7 @@ export class BookingService {
         await this.notificationService.sendNotification(
           user.device_token,
           'Cencellation fee',
-          `Debit of £${cancelFee} has been deducted from your wallet`
+          `Debit of €${cancelFee} has been deducted from your wallet`
         );
       }
 
@@ -267,7 +267,7 @@ export class BookingService {
       await this.notificationService.sendNotification(
         merchant.device_token,
         'Cencellation fee',
-        `Credit of £${cancelFee} has been added to your wallet`
+        `Credit of €${cancelFee} has been added to your wallet`
       );
 
       await Booking.findOneAndUpdate(
@@ -504,7 +504,7 @@ export class BookingService {
       await this.notificationService.sendNotification(
         user.device_token,
         'Payment fee',
-        `Debit of £${amount} has been deducted from your wallet`
+        `Debit of €${amount} has been deducted from your wallet`
       );
     }
 
@@ -518,7 +518,7 @@ export class BookingService {
     await this.notificationService.sendNotification(
       merchant.device_token,
       'Payment fee',
-      `Credit of £${amount} has been added to your wallet`
+      `Credit of €${amount} has been added to your wallet`
     );
 
     await Booking.findByIdAndUpdate(

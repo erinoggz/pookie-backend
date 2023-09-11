@@ -78,7 +78,7 @@ export class StripeService {
       // const payout = await stripe.payouts.create(
       //   {
       //     amount: Number(amount) * 100, // The amount in cents (e.g., 1000 for $10.00)
-      //     currency: 'gbp', // Change to your desired currency code (e.g., 'eur' for Euro)
+      //     currency: 'EUR', // Change to your desired currency code (e.g., 'eur' for Euro)
       //     destination: bankAccountToken, // The bank account token you want to send the payout to,
       //     source_type: 'card',
       //     method: 'instant',
