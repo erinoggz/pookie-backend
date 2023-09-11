@@ -9,6 +9,10 @@ const TransactionHistorySchema = new Schema<ITransactionHistory>(
       type: Schema.Types.ObjectId,
       ref: 'Booking',
     },
+    transactionType: {
+      type: String,
+      enum: Object.values(['apple', 'stripe']).concat([null]),
+    },
   },
   {
     timestamps: true,

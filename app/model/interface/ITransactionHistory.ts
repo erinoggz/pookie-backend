@@ -4,4 +4,5 @@ export interface ITransactionHistory extends Document {
   _id: Types.ObjectId;
   booking: Types.ObjectId;
   transactionId: string;
+  transactionType: 'apple' | 'stripe';
 }
