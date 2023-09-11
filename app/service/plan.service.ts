@@ -39,10 +39,10 @@ export class PlanService {
     req: IRequest
   ): Promise<ISuccess | ErrnoException> => {
     const { planId, walletId, transactionId, appleTransID, amount } = req.body;
-    if (!walletId && !transactionId) {
+    if (!walletId && !transactionId && !appleTransID) {
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
-        'walletId or transactionId is required'
+        'walletId, transactionId, or appleTransID is required'
       );
     }
     const currentPlan = await Plan.findById(new Types.ObjectId(planId));
