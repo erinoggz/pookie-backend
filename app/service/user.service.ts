@@ -253,10 +253,7 @@ export class UserService {
   };
 
   public blockedList = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
-    const { page, limit } = req.query;
     const query = req.query;
-    const p = Number(page) || Constants.FETCH_DATA_DEFAULT_PAGE_NUMBER;
-    const pp = Number(limit) || Constants.FETCH_DATA_MIN_LIMIT;
     let result = [];
     if (query['blockedList'] === 'true') {
       result = await User.find({ _id: req.user.id })
