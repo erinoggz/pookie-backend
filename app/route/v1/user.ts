@@ -11,6 +11,7 @@ UserRouter.post('/report', authMiddleware, userController.report);
 UserRouter.put('/account/delete', authMiddleware, userController.deleteAccount);
 UserRouter.put('/account/block', authMiddleware, userController.blockAccount);
 UserRouter.put('/account/unblock', authMiddleware, userController.unBlockAccount);
+UserRouter.get('/account/blacklist', authMiddleware, userController.blockedList);
 UserRouter.put('/garda-check', authMiddleware, userController.addGarderCheck);
 UserRouter.get('/verify', authMiddleware, userController.complycubeVerification);
 UserRouter.post('/comply/webhook', userController.complycubeWebhook);

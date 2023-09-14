@@ -386,15 +386,13 @@ export class AuthService {
   };
 
   public me = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
-    const user = await User.findById(new Types.ObjectId(req.user.id))
-      .populate({
-        path: 'current_subscription',
-        populate: {
-          path: 'plan',
-          model: 'Plan',
-        },
-      })
-      .populate('blacklist', '_id firstName lastName email');
+    const user = await User.findById(new Types.ObjectId(req.user.id)).populate({
+      path: 'current_subscription',
+      populate: {
+        path: 'plan',
+        model: 'Plan',
+      },
+    });
     user.password = undefined;
     return Helpers.success(user);
   };

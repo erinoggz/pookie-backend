@@ -46,6 +46,24 @@ class UserController {
   };
 
   /**
+   * @route GET api/v1/user/account/blacklist.
+   * @desc GET report
+   * @access Public.
+   */
+  blockedList = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.userService.blockedList(req);
+      return res.ok(result?.data, result?.message || 'users fetched successfully!');
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to fetch users',
+        error?.code
+      );
+    }
+  };
+
+  /**
    * @route PUT api/v1/user/garda-check.
    * @desc PUT user
    * @access Public.

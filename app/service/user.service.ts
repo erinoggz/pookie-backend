@@ -11,6 +11,7 @@ import { EventVerifier } from '@complycube/api';
 import config from '../config/config';
 import { LoggerService } from './logger.service';
 import Report from '../model/report.model';
+import Constants from '../lib/constants';
 const eventVerifier = new EventVerifier(config.complycube.complycube_webhook_secret);
 @injectable()
 export class UserService {
@@ -249,5 +250,55 @@ export class UserService {
     });
 
     return Helpers.success(null);
+  };
+
+  public blockedList = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
+    const { page, limit } = req.query;
+    const query = req.query;
+    const p = Number(page) || Constants.FETCH_DATA_DEFAULT_PAGE_NUMBER;
+    const pp = Number(limit) || Constants.FETCH_DATA_MIN_LIMIT;
+    let result = [];
+    if (query['blockedList'] === 'true') {
+      result = await User.find({ _id: req.user.id })
+        .populate([
+          {
+            path: 'blacklist',
+            select:
+              '_id firstName lastName state country address email profilePicture',
+            options: {
+              sort: {},
+              skip: pp * (p - 1),
+              limit: pp,
+            },
+          },
+        ])
+        .select('_id blacklist');
+      result = result[0]?.blacklist;
+    }
+
+    if (query['blockedBy'] === 'true') {
+      result = await User.find({
+        blacklist: { $in: req.user.id },
+      })
+        .skip(pp * (p - 1))
+        .limit(pp)
+        .select({
+          _id: 1,
+          firstName: 1,
+          lastName: 1,
+          state: 1,
+          country: 1,
+          address: 1,
+          email: 1,
+          profilePicture: 1,
+        });
+    }
+
+    const data = {
+      result,
+      page: p,
+      limit: pp,
+    };
+    return Helpers.success(data);
   };
 }
