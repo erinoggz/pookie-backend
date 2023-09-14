@@ -29,6 +29,7 @@ export interface IUser extends Document {
   noOfChildren: string;
   specialNeeds: string;
   experience: string;
+  stripeAcct: string;
   profileSetupComplete: boolean;
   pets: string;
   rate: string;

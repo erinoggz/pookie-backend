@@ -265,11 +265,6 @@ export class UserService {
             path: 'blacklist',
             select:
               '_id firstName lastName state country address email profilePicture',
-            options: {
-              sort: {},
-              skip: pp * (p - 1),
-              limit: pp,
-            },
           },
         ])
         .select('_id blacklist');
@@ -279,26 +274,17 @@ export class UserService {
     if (query['blockedBy'] === 'true') {
       result = await User.find({
         blacklist: { $in: req.user.id },
-      })
-        .skip(pp * (p - 1))
-        .limit(pp)
-        .select({
-          _id: 1,
-          firstName: 1,
-          lastName: 1,
-          state: 1,
-          country: 1,
-          address: 1,
-          email: 1,
-          profilePicture: 1,
-        });
+      }).select({
+        _id: 1,
+        firstName: 1,
+        lastName: 1,
+        state: 1,
+        country: 1,
+        address: 1,
+        email: 1,
+        profilePicture: 1,
+      });
     }
-
-    const data = {
-      result,
-      page: p,
-      limit: pp,
-    };
-    return Helpers.success(data);
+    return Helpers.success(result);
   };
 }

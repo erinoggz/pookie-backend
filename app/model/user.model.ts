@@ -113,6 +113,7 @@ const UserSchema = new Schema<IUserModel>(
     },
     childcareCertification: String,
     cpr: String,
+    stripeAcct: String,
     ownTransport: {
       type: Boolean,
       default: false,
