@@ -10,6 +10,7 @@ import { VerficationService } from './verification.service';
 import { EventVerifier } from '@complycube/api';
 import config from '../config/config';
 import { LoggerService } from './logger.service';
+import Report from '../model/report.model';
 const eventVerifier = new EventVerifier(config.complycube.complycube_webhook_secret);
 @injectable()
 export class UserService {
@@ -58,6 +59,8 @@ export class UserService {
     if (body['lessons']) {
       query['lessons'] = { $in: body['lessons'] };
     }
+    query['_id'] = { $nin: req.user.blacklist };
+
     query['userType'] = { $ne: UserType.parent };
     query['status'] = { $eq: true };
     if (srch) {
@@ -192,5 +195,59 @@ export class UserService {
         `Webhook Error: ${error?.message}`
       );
     }
+  };
+
+  public blockAccount = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { accountId } = req.body;
+    if (!accountId)
+      return Helpers.CustomException(
+        StatusCodes.BAD_REQUEST,
+        `accountId is required`
+      );
+    await User.updateOne(
+      { _id: new Types.ObjectId(req.user.id) },
+      { $addToSet: { blacklist: accountId } }
+    );
+
+    return Helpers.success(null);
+  };
+
+  public unBlockAccount = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { accountId } = req.body;
+    if (!accountId)
+      return Helpers.CustomException(
+        StatusCodes.BAD_REQUEST,
+        `accountId is required`
+      );
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { $addToSet: { blacklist: accountId } },
+      { upsert: true, new: true }
+    );
+
+    await User.updateOne(
+      { _id: new Types.ObjectId(req.user.id) },
+      { $pull: { blacklist: { $eq: new Types.ObjectId(accountId) } } }
+    );
+
+    return Helpers.success(null);
+  };
+
+  public report = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
+    const { comment, evidence, user } = req.body;
+    if (!user)
+      return Helpers.CustomException(StatusCodes.BAD_REQUEST, `user is required`);
+    await Report.create({
+      user: new Types.ObjectId(req.user.id),
+      reporting_user: user,
+      comment,
+      evidence,
+    });
+
+    return Helpers.success(null);
   };
 }

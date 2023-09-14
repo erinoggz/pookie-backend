@@ -53,4 +53,5 @@ export interface IUser extends Document {
   userVerifiedAt: Date;
   childcareCertified: boolean;
   ratings: { reviewCount: number; averageRatings: number };
+  blacklist: [];
 }

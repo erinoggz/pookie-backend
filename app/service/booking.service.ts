@@ -67,6 +67,17 @@ export class BookingService {
         `Sitter is currently not available!`
       );
 
+    const verifyBlacklist = await User.find(
+      { blacklist: { $in: [new Types.ObjectId(userId)] } },
+      { _id: new Types.ObjectId(merchantId) }
+    );
+
+    if (verifyBlacklist.length)
+      return Helpers.CustomException(
+        StatusCodes.BAD_REQUEST,
+        `Unable to book for service at this time`
+      );
+
     const booking: IBookingModel = new Booking({
       user: new Types.ObjectId(userId),
       merchant: new Types.ObjectId(merchantId),

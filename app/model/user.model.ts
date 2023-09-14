@@ -125,7 +125,12 @@ const UserSchema = new Schema<IUserModel>(
       type: Boolean,
       default: true,
     },
-
+    blacklist: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Users',
+      },
+    ],
     gardaCheckdoc: {
       type: String,
     },
