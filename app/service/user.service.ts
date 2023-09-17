@@ -282,6 +282,6 @@ export class UserService {
         profilePicture: 1,
       });
     }
-    return Helpers.success(result);
+    return Helpers.success({ result });
   };
 }
