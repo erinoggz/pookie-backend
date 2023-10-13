@@ -59,10 +59,10 @@ export class StripeService {
     return account;
   };
 
-  public updateAccountNumber = async (accountId: string): Promise<any> => {
+  public updateAccountNumber = async (user, stripeAccountNumber): Promise<any> => {
     try {
-      const account = await stripe.accounts.update(`${accountId}`, {
-        business_type: 'individual',
+      const account = await stripe.accounts.update(`${user.stripeAcct}`, {
+        external_account: `${stripeAccountNumber}`,
       });
       return account;
     } catch (error) {

@@ -113,8 +113,11 @@ export class UserService {
     const user = await User.findById(new Types.ObjectId(req.user.id));
     user.stripeAccountNumber = stripeAccountNumber;
     await user.save();
-    await this.stripeService.updateAccountNumber(req.user.stripeAcct);
-    return Helpers.success(null);
+    const data = await this.stripeService.updateAccountNumber(
+      user,
+      stripeAccountNumber
+    );
+    return Helpers.success(data);
   };
 
   public complycubeVerification = async (

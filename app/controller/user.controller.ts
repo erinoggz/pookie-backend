@@ -120,6 +120,22 @@ class UserController {
     }
   };
 
+  addAccountNumber = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.userService.addAccountNumber(req);
+      return res.ok(
+        result?.data,
+        result?.message || 'Account number added successfully!'
+      );
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to add account number',
+        error?.code
+      );
+    }
+  };
+
   /**
    * @route PUT api/v1/user/account/delete.
    * @desc PUT delete user

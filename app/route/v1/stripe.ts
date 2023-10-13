@@ -6,9 +6,11 @@ import authMiddleware from '../../middleware/auth.middleware';
 const StripeRouter: Router = express.Router();
 const stripeController: StripeController = container.resolve(StripeController);
 
-StripeRouter.post('/initialzie', authMiddleware, stripeController.initializePayment)
-  .post('/payout', authMiddleware, stripeController.issuePayout)
-  .put('/account/update', authMiddleware, stripeController.updateAccountNumber);
+StripeRouter.post(
+  '/initialzie',
+  authMiddleware,
+  stripeController.initializePayment
+).post('/payout', authMiddleware, stripeController.issuePayout);
 
 // .get('/verify', authMiddleware, stripeController.verifyPayment);
 
