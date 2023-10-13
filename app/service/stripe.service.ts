@@ -59,6 +59,20 @@ export class StripeService {
     return account;
   };
 
+  public updateAccountNumber = async (accountId: string): Promise<any> => {
+    try {
+      const account = await stripe.accounts.update(`${accountId}`, {
+        business_type: 'individual',
+      });
+      return account;
+    } catch (error) {
+      return Helpers.CustomException(
+        StatusCodes.UNPROCESSABLE_ENTITY,
+        error?.message
+      );
+    }
+  };
+
   public verifyPayment = async (transactionId: string): Promise<any> => {
     const checkout = await stripe.paymentIntents.retrieve(String(transactionId));
     return checkout;
@@ -102,3 +116,5 @@ export class StripeService {
     }
   };
 }
+
+//mongodb+srv://pookie:<password>@atlascluster.ctsque9.mongodb.net/

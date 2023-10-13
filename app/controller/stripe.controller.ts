@@ -33,6 +33,21 @@ class StripeController {
     }
   };
 
+  updateAccountNumber = async (req: IRequest, res: IResponse) => {
+    try {
+      const result = await this.stripeService.updateAccountNumber(
+        req.body.accountId
+      );
+      return res.ok(result, result?.message || 'Account updated successfully!');
+    } catch (error) {
+      return res.serverError(
+        error,
+        error?.message || 'An error occured while trying to update account',
+        error?.code
+      );
+    }
+  };
+
   /**
    * @route Post api/v1/payment/payout.
    * @desc post payout

@@ -38,6 +38,7 @@ export interface IUser extends Document {
   language: Array<string>;
   firstAid: boolean;
   verification_id: string;
+  stripeAccountNumber: string;
   childcareCertification: string;
   cpr: string;
   ownTransport: boolean;
