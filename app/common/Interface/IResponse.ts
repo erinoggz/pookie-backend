@@ -6,6 +6,7 @@ export interface IRequest extends Request {
 
 export interface ErrnoException extends Error {
   errno?: number;
+  source?: string;
   code?: number;
   path?: string;
   data?: any;
