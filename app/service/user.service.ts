@@ -108,15 +108,14 @@ export class UserService {
   public addAccountNumber = async (
     req: IRequest
   ): Promise<ISuccess | ErrnoException> => {
-    const { stripeAccountNumber } = req.body;
+    const { accountName, accountNumber } = req.body;
 
     const user = await User.findById(new Types.ObjectId(req.user.id));
-    user.stripeAccountNumber = stripeAccountNumber;
+    user.stripeAccount.accountName = accountName;
+    user.stripeAccount.accountNumber = accountNumber;
+
     await user.save();
-    const data = await this.stripeService.updateAccountNumber(
-      user,
-      stripeAccountNumber
-    );
+    const data = await this.stripeService.updateAccountNumber(user, accountNumber);
     return Helpers.success(data);
   };
 
