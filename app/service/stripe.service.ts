@@ -6,6 +6,7 @@ import { LoggerService } from './logger.service';
 import Stripe from 'stripe';
 import configuration from '../config/config';
 import StatusCodes from '../lib/response/status-codes';
+import moment from 'moment';
 
 const stripe = new Stripe(configuration.stripe.stripe_secret_key, {
   apiVersion: '2022-11-15',
@@ -39,57 +40,32 @@ export class StripeService {
     return Helpers.success(session);
   };
 
-  // public verifyPayment = async (
-  //   req: IRequest
-  // ): Promise<ISuccess | ErrnoException> => {
-  //   const { sessionId } = req.query;
-  //   const checkout = await stripe.paymentIntents.retrieve(String(sessionId));
-  //   return Helpers.success(checkout);
-  // };
-
-  public verifyPayment = async (transactionId: string): Promise<any> => {
-    const checkout = await stripe.paymentIntents.retrieve(String(transactionId));
-    return checkout;
-    // return Helpers.success(checkout);
+  public account = async (email: string, state?: string): Promise<any> => {
+    const account = await stripe.accounts.create({
+      type: 'custom',
+      country: 'GB',
+      email,
+      business_type: 'individual',
+      capabilities: {
+        card_payments: {
+          requested: true,
+        },
+        transfers: {
+          requested: true,
+        },
+      },
+      default_currency: 'eur',
+    });
+    return account;
   };
 
-  public issuePayout = async (req: IRequest) => {
+  public updateAccountNumber = async (user, stripeAccountNumber): Promise<any> => {
     try {
-      const { amount, bankAccountToken, acctID } = req.body;
-
-      // const externalAccount = await stripe.accounts.createExternalAccount(
-      //   'acct_1NVRmtGFKVSTADSs',
-      //   {
-      //     external_account: bankAccountToken,
-      //   }
-      // );
-      // const externalAccount = await stripe.accounts.create({
-      //   type: 'express',
-      // });
-
-      const accountLink = await stripe.accountLinks.create({
-        account: acctID,
-        refresh_url: 'https://example.com/reauth',
-        return_url: 'https://example.com/return',
-        type: 'account_onboarding',
+      const account = await stripe.accounts.update(`${user.stripeAcct}`, {
+        external_account: `${stripeAccountNumber}`,
       });
-
-      console.log({ accountLink });
-      // const payout = await stripe.payouts.create(
-      //   {
-      //     amount: Number(amount) * 100, // The amount in cents (e.g., 1000 for $10.00)
-      //     currency: 'gbp', // Change to your desired currency code (e.g., 'eur' for Euro)
-      //     destination: bankAccountToken, // The bank account token you want to send the payout to,
-      //     source_type: 'card',
-      //     method: 'instant',
-      //   },
-      //   { stripeAccount: 'acct_1NVRmtGFKVSTADSs' }
-      // );
-
-      // this.logger.log(`Payout created: ${payout}`);
-      return Helpers.success(accountLink);
+      return account;
     } catch (error) {
-      this.logger.error(`Error creating payout: ${error}`);
       return Helpers.CustomException(
         StatusCodes.UNPROCESSABLE_ENTITY,
         error?.message
@@ -97,26 +73,48 @@ export class StripeService {
     }
   };
 
-  // public createCardToken = async (req: IRequest) => {
-  //   try {
-  //     const cardData = {
-  //       number: '4242424242424242',
-  //       exp_month: 12,
-  //       exp_year: 2024,
-  //       cvc: '123',
-  //     };
-  //     const payout = await stripe.tokens.create({
-  //       card: cardData,
-  //     });
+  public verifyPayment = async (transactionId: string): Promise<any> => {
+    const checkout = await stripe.paymentIntents.retrieve(String(transactionId));
+    return checkout;
+  };
 
-  //     this.logger.log(`card created: ${payout}`);
-  //     return Helpers.success(payout);
-  //   } catch (error) {
-  //     this.logger.error(`Error creating card: ${error}`);
-  //     return Helpers.CustomException(
-  //       StatusCodes.UNPROCESSABLE_ENTITY,
-  //       error?.message
-  //     );
-  //   }
-  // };
+  public updateAccount = async (accountID: string, ip: string): Promise<any> => {
+    const time = moment.utc().valueOf();
+    const date = Math.floor(time / 1000);
+
+    try {
+      const account = await stripe.accounts.update(`${accountID}`, {
+        tos_acceptance: {
+          date,
+          ip,
+        },
+      });
+      return account;
+    } catch (error) {
+      return Helpers.CustomException(
+        StatusCodes.UNPROCESSABLE_ENTITY,
+        error?.message
+      );
+    }
+  };
+
+  public issuePayout = async (req: IRequest) => {
+    try {
+      const transfer = await stripe.transfers.create({
+        amount: Number(req.body.amount),
+        currency: 'eur',
+        destination: `${req.user.stripeAcct}`,
+      });
+      return transfer;
+    } catch (error) {
+      this.logger.error(`Error creating payout: ${error}`);
+      return Helpers.CustomException(
+        StatusCodes.UNPROCESSABLE_ENTITY,
+        error?.message,
+        'stripe'
+      );
+    }
+  };
 }
+
+//mongodb+srv://pookie:<password>@atlascluster.ctsque9.mongodb.net/

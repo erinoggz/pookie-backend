@@ -10,6 +10,8 @@ import { VerficationService } from './verification.service';
 import { EventVerifier } from '@complycube/api';
 import config from '../config/config';
 import { LoggerService } from './logger.service';
+import Report from '../model/report.model';
+import { StripeService } from './stripe.service';
 const eventVerifier = new EventVerifier(config.complycube.complycube_webhook_secret);
 @injectable()
 export class UserService {
@@ -31,6 +33,7 @@ export class UserService {
 
   constructor(
     private verificationService: VerficationService,
+    private stripeService: StripeService,
     private logger: LoggerService
   ) {
     this.pagination = new PaginationService(User);
@@ -58,6 +61,8 @@ export class UserService {
     if (body['lessons']) {
       query['lessons'] = { $in: body['lessons'] };
     }
+    query['_id'] = { $nin: req.user.blacklist };
+
     query['userType'] = { $ne: UserType.parent };
     query['status'] = { $eq: true };
     if (srch) {
@@ -98,6 +103,20 @@ export class UserService {
     );
 
     return Helpers.success(null);
+  };
+
+  public addAccountNumber = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { accountName, accountNumber } = req.body;
+
+    const user = await User.findById(new Types.ObjectId(req.user.id));
+    user.stripeAccount.accountName = accountName;
+    user.stripeAccount.accountNumber = accountNumber;
+
+    await user.save();
+    const data = await this.stripeService.updateAccountNumber(user, accountNumber);
+    return Helpers.success(data);
   };
 
   public complycubeVerification = async (
@@ -192,5 +211,92 @@ export class UserService {
         `Webhook Error: ${error?.message}`
       );
     }
+  };
+
+  public blockAccount = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { accountId } = req.body;
+    if (!accountId)
+      return Helpers.CustomException(
+        StatusCodes.BAD_REQUEST,
+        `accountId is required`
+      );
+    await User.updateOne(
+      { _id: new Types.ObjectId(req.user.id) },
+      { $addToSet: { blacklist: accountId } }
+    );
+
+    return Helpers.success(null);
+  };
+
+  public unBlockAccount = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { accountId } = req.body;
+    if (!accountId)
+      return Helpers.CustomException(
+        StatusCodes.BAD_REQUEST,
+        `accountId is required`
+      );
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { $addToSet: { blacklist: accountId } },
+      { upsert: true, new: true }
+    );
+
+    await User.updateOne(
+      { _id: new Types.ObjectId(req.user.id) },
+      { $pull: { blacklist: { $eq: new Types.ObjectId(accountId) } } }
+    );
+
+    return Helpers.success(null);
+  };
+
+  public report = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
+    const { comment, evidence, user } = req.body;
+    if (!user)
+      return Helpers.CustomException(StatusCodes.BAD_REQUEST, `user is required`);
+    await Report.create({
+      user: new Types.ObjectId(req.user.id),
+      reporting_user: user,
+      comment,
+      evidence,
+    });
+
+    return Helpers.success(null);
+  };
+
+  public blockedList = async (req: IRequest): Promise<ISuccess | ErrnoException> => {
+    const query = req.query;
+    let result = [];
+    if (query['blockedList'] === 'true') {
+      result = await User.find({ _id: req.user.id })
+        .populate([
+          {
+            path: 'blacklist',
+            select:
+              '_id firstName lastName state country address email profilePicture',
+          },
+        ])
+        .select('_id blacklist');
+      result = result[0]?.blacklist;
+    }
+
+    if (query['blockedBy'] === 'true') {
+      result = await User.find({
+        blacklist: { $in: req.user.id },
+      }).select({
+        _id: 1,
+        firstName: 1,
+        lastName: 1,
+        state: 1,
+        country: 1,
+        address: 1,
+        email: 1,
+        profilePicture: 1,
+      });
+    }
+    return Helpers.success({ result });
   };
 }

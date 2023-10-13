@@ -67,6 +67,17 @@ export class BookingService {
         `Sitter is currently not available!`
       );
 
+    const verifyBlacklist = await User.find(
+      { blacklist: { $in: [new Types.ObjectId(userId)] } },
+      { _id: new Types.ObjectId(merchantId) }
+    );
+
+    if (verifyBlacklist.length)
+      return Helpers.CustomException(
+        StatusCodes.BAD_REQUEST,
+        `Unable to book for service at this time`
+      );
+
     const booking: IBookingModel = new Booking({
       user: new Types.ObjectId(userId),
       merchant: new Types.ObjectId(merchantId),
@@ -85,7 +96,7 @@ export class BookingService {
       await this.notificationService.sendNotification(
         user.device_token,
         'Booking fee',
-        `Debit of £${bookingFee} has been deducted from your wallet`
+        `Debit of €${bookingFee} has been deducted from your wallet`
       );
     }
 
@@ -245,7 +256,7 @@ export class BookingService {
         await this.notificationService.sendNotification(
           user.device_token,
           'Cencellation fee',
-          `Debit of £${cancelFee} has been deducted from your wallet`
+          `Debit of €${cancelFee} has been deducted from your wallet`
         );
       }
 
@@ -267,7 +278,7 @@ export class BookingService {
       await this.notificationService.sendNotification(
         merchant.device_token,
         'Cencellation fee',
-        `Credit of £${cancelFee} has been added to your wallet`
+        `Credit of €${cancelFee} has been added to your wallet`
       );
 
       await Booking.findOneAndUpdate(
@@ -488,7 +499,7 @@ export class BookingService {
       if (verifyPayment.status !== 'succeeded') {
         return Helpers.CustomException(
           StatusCodes.UNPROCESSABLE_ENTITY,
-          'Unable to fund wallet. Payment not successful.'
+          'Payment not successful.'
         );
       }
     }
@@ -504,7 +515,7 @@ export class BookingService {
       await this.notificationService.sendNotification(
         user.device_token,
         'Payment fee',
-        `Debit of £${amount} has been deducted from your wallet`
+        `Debit of €${amount} has been deducted from your wallet`
       );
     }
 
@@ -518,7 +529,7 @@ export class BookingService {
     await this.notificationService.sendNotification(
       merchant.device_token,
       'Payment fee',
-      `Credit of £${amount} has been added to your wallet`
+      `Credit of €${amount} has been added to your wallet`
     );
 
     await Booking.findByIdAndUpdate(

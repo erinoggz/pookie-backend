@@ -18,5 +18,6 @@ AppRouter.use('/booking', BookingRouter);
 AppRouter.use('/rating', RatingsRouter);
 AppRouter.use('/wallet', WalletRouter);
 AppRouter.use('/paypal', PaypalRouter);
+AppRouter.use('/stripe', StripeRouter);
 
 export default AppRouter;

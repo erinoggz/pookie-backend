@@ -134,7 +134,7 @@ export class WalletService {
       await this.notificationService.sendNotification(
         user.device_token,
         'Wallet funded',
-        `Credit of £${amount} has been added to your wallet`
+        `Credit of €${amount} has been added to your wallet`
       );
       return Helpers.success(history[0]);
     } catch (error) {

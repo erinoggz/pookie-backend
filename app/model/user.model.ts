@@ -113,6 +113,11 @@ const UserSchema = new Schema<IUserModel>(
     },
     childcareCertification: String,
     cpr: String,
+    stripeAcct: String,
+    stripeAccount: {
+      accountName: { type: String, default: null },
+      accountNumber: { type: String, default: null },
+    },
     ownTransport: {
       type: Boolean,
       default: false,
@@ -125,7 +130,12 @@ const UserSchema = new Schema<IUserModel>(
       type: Boolean,
       default: true,
     },
-
+    blacklist: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Users',
+      },
+    ],
     gardaCheckdoc: {
       type: String,
     },

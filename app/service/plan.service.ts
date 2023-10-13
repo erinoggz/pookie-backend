@@ -38,11 +38,11 @@ export class PlanService {
   public upgradeSubscription = async (
     req: IRequest
   ): Promise<ISuccess | ErrnoException> => {
-    const { planId, walletId, transactionId, amount } = req.body;
-    if (!walletId && !transactionId) {
+    const { planId, walletId, transactionId, appleTransID, amount } = req.body;
+    if (!walletId && !transactionId && !appleTransID) {
       return Helpers.CustomException(
         StatusCodes.BAD_REQUEST,
-        'walletId or transactionId is required'
+        'walletId, transactionId, or appleTransID is required'
       );
     }
     const currentPlan = await Plan.findById(new Types.ObjectId(planId));
@@ -60,7 +60,7 @@ export class PlanService {
       // update transaction history
       await TransactionHistory.findOneAndUpdate(
         { transactionId },
-        { transactionId, booking: null },
+        { transactionId, booking: null, transactionType: 'stripe' },
         { upsert: true, new: true }
       );
       if (verifyPayment.status !== 'succeeded') {
@@ -69,6 +69,15 @@ export class PlanService {
           'Unable to upgrage plan. Payment not successful.'
         );
       }
+    }
+
+    if (appleTransID) {
+      // update transaction history
+      await TransactionHistory.findOneAndUpdate(
+        { transactionId: appleTransID },
+        { transactionId: appleTransID, transactionType: 'apple', booking: null },
+        { upsert: true, new: true }
+      );
     }
     let duration = 0;
 
