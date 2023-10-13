@@ -62,9 +62,14 @@ export default class Helpers {
    * @param  {object} obj - The object to check.
    * @return {object} - The result.
    */
-  static CustomException(code?: number, message?: string): ErrnoException {
+  static CustomException(
+    code?: number,
+    message?: string,
+    source?: string
+  ): ErrnoException {
     const error: ErrnoException = new Error(message || '');
     error.code = code || StatusCodes.UNPROCESSABLE_ENTITY;
+    error.source = source;
     throw error;
   }
 
