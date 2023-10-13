@@ -11,6 +11,7 @@ StripeRouter.post(
   authMiddleware,
   stripeController.initializePayment
 ).post('/payout', authMiddleware, stripeController.issuePayout);
+
 // .get('/verify', authMiddleware, stripeController.verifyPayment);
 
 export default StripeRouter;

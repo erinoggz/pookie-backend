@@ -499,7 +499,7 @@ export class BookingService {
       if (verifyPayment.status !== 'succeeded') {
         return Helpers.CustomException(
           StatusCodes.UNPROCESSABLE_ENTITY,
-          'Unable to fund wallet. Payment not successful.'
+          'Payment not successful.'
         );
       }
     }

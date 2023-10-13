@@ -11,7 +11,7 @@ import { EventVerifier } from '@complycube/api';
 import config from '../config/config';
 import { LoggerService } from './logger.service';
 import Report from '../model/report.model';
-import Constants from '../lib/constants';
+import { StripeService } from './stripe.service';
 const eventVerifier = new EventVerifier(config.complycube.complycube_webhook_secret);
 @injectable()
 export class UserService {
@@ -33,6 +33,7 @@ export class UserService {
 
   constructor(
     private verificationService: VerficationService,
+    private stripeService: StripeService,
     private logger: LoggerService
   ) {
     this.pagination = new PaginationService(User);
@@ -102,6 +103,20 @@ export class UserService {
     );
 
     return Helpers.success(null);
+  };
+
+  public addAccountNumber = async (
+    req: IRequest
+  ): Promise<ISuccess | ErrnoException> => {
+    const { accountName, accountNumber } = req.body;
+
+    const user = await User.findById(new Types.ObjectId(req.user.id));
+    user.stripeAccount.accountName = accountName;
+    user.stripeAccount.accountNumber = accountNumber;
+
+    await user.save();
+    const data = await this.stripeService.updateAccountNumber(user, accountNumber);
+    return Helpers.success(data);
   };
 
   public complycubeVerification = async (

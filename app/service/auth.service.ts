@@ -21,12 +21,14 @@ import { WalletService } from './wallet.service';
 import verifyEmail from '../templates/verifyEmail';
 import resetEmail from '../templates/resetEmail';
 import { EmailService } from './email.service';
-
+import { StripeService } from './stripe.service';
+import IP from 'ip';
 @injectable()
 export class AuthService {
   constructor(
     private emailService: EmailService,
-    private walletService: WalletService
+    private walletService: WalletService,
+    private stripeService: StripeService
   ) {}
 
   public registerUser = async (
@@ -99,7 +101,7 @@ export class AuthService {
 
     let plan_code = plans[0].plan_code;
 
-    if (userType === UserType.sitter) {
+    if (userType !== UserType.parent) {
       plan_code = plans[1].plan_code;
     }
     const wallet = await this.walletService.createWallet(user.id);
@@ -115,6 +117,15 @@ export class AuthService {
       currency: plan.currency,
       status: StatusType.active,
     });
+    if (userType !== UserType.parent) {
+      const stripeAcct = await this.stripeService.account(email);
+      user.stripeAcct = stripeAcct.id;
+
+      // add this to accept stripe policy for this created account
+      const ipAddress = IP.address();
+      await this.stripeService.updateAccount(stripeAcct.id, ipAddress);
+    }
+
     user.current_subscription = current_subscription._id;
     user = await user.save();
     // Make response not to send user password

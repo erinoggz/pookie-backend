@@ -15,5 +15,6 @@ UserRouter.get('/account/blacklist', authMiddleware, userController.blockedList)
 UserRouter.put('/garda-check', authMiddleware, userController.addGarderCheck);
 UserRouter.get('/verify', authMiddleware, userController.complycubeVerification);
 UserRouter.post('/comply/webhook', userController.complycubeWebhook);
+  UserRouter.put('/account/update', authMiddleware, userController.addAccountNumber);
 
 export default UserRouter;
